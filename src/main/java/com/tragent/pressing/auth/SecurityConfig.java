@@ -5,75 +5,58 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 
 import com.tragent.pressing.repository.UserRepository;
 import com.tragent.pressing.service.CustomUserDetailService;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+@EnableMethodSecurity(securedEnabled = true)
+public class SecurityConfig {
 
-	@Autowired
-	private UserRepository userRepository;
-			
-	@Override
-    protected void configure(HttpSecurity http) throws Exception {
-		
-		http.csrf().disable()
-        	.authorizeRequests()
-        	.antMatchers(HttpMethod.POST, "/api/v1/authenticate").permitAll()
-            .anyRequest().authenticated()
-            .and()
-            .httpBasic()
-            .authenticationEntryPoint(getBasicAuthEntryPoint())
-            .and()
-            .sessionManagement()
-            .sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS);
-        	
-	}
-	
-	@Bean
-	public CustomBasicAuthenticationEntryPoint getBasicAuthEntryPoint() {
-		return new CustomBasicAuthenticationEntryPoint();
-	}
-	
-	/**
-	 *  To allow Pre-flight [OPTIONS] request from browser
-	 **/
-	@Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers(HttpMethod.OPTIONS, "/**");
+    @Autowired
+    private UserRepository userRepository;
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST, "/api/v1/authenticate").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .httpBasic(httpBasic -> httpBasic.authenticationEntryPoint(getBasicAuthEntryPoint()))
+                .sessionManagement(session -> session.sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS));
+        return http.build();
     }
-	
-	/**
-	 * Register custom UserDetailService to Spring Security and tell 
-	 * spring security to use this class for loading user form database.
-	 **/
-	@Override
-	public UserDetailsService userDetailsServiceBean() throws Exception {
-		return new CustomUserDetailService(userRepository);
-	}
-	
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-	    return new BCryptPasswordEncoder();
-	}
-	
-	@Bean
-	public DaoAuthenticationProvider authProvider() throws Exception {
-	    DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-	    authProvider.setUserDetailsService(userDetailsServiceBean());
-	    authProvider.setPasswordEncoder(passwordEncoder());
-	    return authProvider;
-	}
-	
+
+    @Bean
+    public CustomBasicAuthenticationEntryPoint getBasicAuthEntryPoint() {
+        return new CustomBasicAuthenticationEntryPoint();
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return new CustomUserDetailService(userRepository);
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService());
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
+    }
+
 }

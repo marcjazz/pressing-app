@@ -27,7 +27,7 @@ public class PermissionServiceImpl implements PermissionService {
 	@Override
 	public Permission findById(Long id) {
 		
-		Permission permission = permissionRepository.findOne(id);
+		Permission permission = permissionRepository.findById(id).orElse(null);
 		return permission;
 	}
 

@@ -28,7 +28,7 @@ public class CustomerServiceImpl implements CustomerService {
 	public Customer findById(Long id) {
 		
 
-		Customer customer = customerRepository.findOne(id);
+		Customer customer = customerRepository.findById(id).orElse(null);
 		return customer;
 	}
 

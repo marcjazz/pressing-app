@@ -28,7 +28,7 @@ public class MaterialPurchaseServiceImpl implements MaterialPurchaseService {
 	@Override
 	public MaterialPurchase findById(Long id) {
 		
-		MaterialPurchase materialPurchase = materialpurchaserepository.findOne(id);
+		MaterialPurchase materialPurchase = materialpurchaserepository.findById(id).orElse(null);
 		return materialPurchase;
 	}
 

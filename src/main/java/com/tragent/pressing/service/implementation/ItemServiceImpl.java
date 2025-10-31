@@ -32,7 +32,7 @@ public class ItemServiceImpl implements ItemService {
 	@Override
 	public Item findById(Long id) {
 		
-		Item item = itemRepository.findOne(id);
+		Item item = itemRepository.findById(id).orElse(null);
 		return item;
 	}
 
@@ -75,7 +75,7 @@ public class ItemServiceImpl implements ItemService {
 	@Override
 	public Collection<Item> findCategoryItems(Long categoryId) {
 		
-		Category category = categoryRepository.findOne(categoryId);
+		Category category = categoryRepository.findById(categoryId).orElse(null);
 		Collection<Item> items = itemRepository.findByCategory(category);
 		return items;
 	}

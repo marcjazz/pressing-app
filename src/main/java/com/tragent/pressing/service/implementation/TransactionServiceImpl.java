@@ -28,7 +28,7 @@ public class TransactionServiceImpl implements TransactionService {
 	@Override
 	public Transaction findById(Long transactionId) {
 		
-		Transaction transaction = transactionRepository.findOne(transactionId);
+		Transaction transaction = transactionRepository.findById(transactionId).orElse(null);
 		return transaction;
 	}
 

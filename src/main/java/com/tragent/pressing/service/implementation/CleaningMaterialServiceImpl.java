@@ -29,7 +29,7 @@ public class CleaningMaterialServiceImpl implements CleaningMaterialService {
 	public CleaningMaterial findById(Long id) {
 		
 		CleaningMaterial cleaningMaterial;
-		cleaningMaterial = cleaningMaterialRepository.findOne(id);
+		cleaningMaterial = cleaningMaterialRepository.findById(id).orElse(null);
 		return cleaningMaterial;
 	}
 

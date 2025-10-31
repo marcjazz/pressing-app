@@ -40,7 +40,7 @@ public interface MaterialPurchaseService {
 	 * @param materialId
 	 * @return Collection of purchases
 	 */
-	public Collection<MaterialPurchase> findByCleaningMaterial(Long materialId);
+	public Collection<MaterialPurchase> findByCleaningMaterialId(Long materialId);
 	
 	/**
 	 * Create a new purchase.

@@ -35,14 +35,14 @@ public class TransactionServiceImpl implements TransactionService {
 	@Override
 	public Collection<Transaction> findByCustomerId(Long customerId) {
 		
-		Collection<Transaction> transaction = transactionRepository.findByCustomer(customerId);
+		Collection<Transaction> transaction = transactionRepository.findByCustomerId(customerId);
 		return transaction;
 	}
 
 	@Override
 	public Collection<Transaction> findByItemId(Long itemId) {
 		
-		Collection<Transaction> transaction = transactionRepository.findByItem(itemId);
+		Collection<Transaction> transaction = transactionRepository.findByItemId(itemId);
 		return transaction;
 	}
 

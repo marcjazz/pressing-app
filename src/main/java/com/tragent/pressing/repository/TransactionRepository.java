@@ -12,8 +12,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 	
 	Collection<Transaction> findByDepositDate(@Param("date") Date date);
 	Collection<Transaction> findByDueDate(@Param("date") Date date);
-	Collection<Transaction> findByCustomer(@Param("id") Long id );
-	Collection<Transaction> findByItem(@Param("id") Long id );
+	Collection<Transaction> findByCustomerId(@Param("id") Long id );
+	Collection<Transaction> findByItemId(@Param("id") Long id );
 	Collection<Transaction> findByDueDateBeforeAndStatusNot(@Param("date") Date date, @Param("status") String status);
 	Collection<Transaction> findByStatusIn(@Param("status") Collection<String> status );
 }

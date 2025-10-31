@@ -40,9 +40,9 @@ public class MaterialPurchaseServiceImpl implements MaterialPurchaseService {
 	}
 
 	@Override
-	public Collection<MaterialPurchase> findByCleaningMaterial(Long id) {
-		
-		Collection<MaterialPurchase> materialPurchases = materialpurchaserepository.findByCleaningMaterial(id);
+	public Collection<MaterialPurchase> findByCleaningMaterialId(Long id) {
+
+		Collection<MaterialPurchase> materialPurchases = materialpurchaserepository.findByCleaningMaterialId(id);
 		return materialPurchases;
 	}
 

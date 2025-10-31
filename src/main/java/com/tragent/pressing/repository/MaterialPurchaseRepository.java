@@ -11,6 +11,6 @@ import com.tragent.pressing.model.MaterialPurchase;
 public interface MaterialPurchaseRepository extends JpaRepository<MaterialPurchase, Long> {
 
 	Collection<MaterialPurchase> findByPurchasedDate(@Param("date") Date date);
-	Collection<MaterialPurchase> findByCleaningMaterial(@Param("id") Long id);
+	Collection<MaterialPurchase> findByCleaningMaterialId(@Param("id") Long id);
 	
 }

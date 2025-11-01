@@ -1,9 +1,7 @@
 package com.pressing.model;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
-
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,132 +11,136 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
 @Entity
-@Table(name="customer_item")
+@Table(name = "customer_item")
 public class Transaction implements Serializable {
-	
-	@Id
-	@GeneratedValue
-	private Long id;
 
-	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property="id")
-	@ManyToOne(optional=false)
-	@JoinColumn(name="customer_id", referencedColumnName = "id")
-	private Customer customer;
-		
-	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property="id")
-	@ManyToOne(optional=false)
-	@JoinColumn(name="item_id", referencedColumnName = "id")
-	private Item item;
-	
-	@Column(nullable=false)
-	private int quantity;
-	
-	@Column(nullable=false)
-	private String status;
-	
-	@Column(nullable=false, unique=true)
-	private String label;
-	
-	@Column(nullable=false)
-	private Date depositDate = new Date();
-	
-	@Column(nullable=false)
-	private Date dueDate;
-	
-	@Column(nullable=false)
-	@OneToMany(mappedBy="customerItem", cascade=CascadeType.ALL)
-	private List<Payment> payments;
+  @Id @GeneratedValue private Long id;
 
-	public Transaction() {
-		super();
-	}
+  @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "customer_id", referencedColumnName = "id")
+  private Customer customer;
 
-	public Transaction(Customer customer, Item item, int quantity, String status, String label, Date dueDate, Date depositDate) {
-		super();
-		this.customer = customer;
-		this.item = item;
-		this.quantity = quantity;
-		this.status = status;
-		this.label = label;
-		this.dueDate = dueDate;
-		this.depositDate = depositDate;
-	}
+  @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "item_id", referencedColumnName = "id")
+  private Item item;
 
-	public Long getId() {
-		return this.id;
-	}
+  @Column(nullable = false)
+  private int quantity;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-	
-	public Customer getCustomer() {
-		return this.customer;
-	}
+  @Column(nullable = false)
+  private String status;
 
-	public void setCustomer(Customer customer) {
-		this.customer = customer;
-	}
+  @Column(nullable = false, unique = true)
+  private String label;
 
-	public Item getItem() {
-		return this.item;
-	}
+  @Column(nullable = false)
+  private Date depositDate = new Date();
 
-	public void setItem(Item item) {
-		this.item = item;
-	}
+  @Column(nullable = false)
+  private Date dueDate;
 
-	public int getQuantity() {
-		return this.quantity;
-	}
+  @Column(nullable = false)
+  @OneToMany(mappedBy = "customerItem", cascade = CascadeType.ALL)
+  private List<Payment> payments;
 
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
-	}
+  public Transaction() {
+    super();
+  }
 
-	public String getStatus() {
-		return this.status;
-	}
+  public Transaction(
+      Customer customer,
+      Item item,
+      int quantity,
+      String status,
+      String label,
+      Date dueDate,
+      Date depositDate) {
+    super();
+    this.customer = customer;
+    this.item = item;
+    this.quantity = quantity;
+    this.status = status;
+    this.label = label;
+    this.dueDate = dueDate;
+    this.depositDate = depositDate;
+  }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+  public Long getId() {
+    return this.id;
+  }
 
-	public String getLabel() {
-		return this.label;
-	}
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-	public void setLabel(String label) {
-		this.label = label;
-	}
+  public Customer getCustomer() {
+    return this.customer;
+  }
 
-	public Date getDepositDate() {
-		return this.depositDate;
-	}
+  public void setCustomer(Customer customer) {
+    this.customer = customer;
+  }
 
-	public void setDepositDate(Date depositDate) {
-		this.depositDate = depositDate;
-	}
+  public Item getItem() {
+    return this.item;
+  }
 
-	public Date getDueDate() {
-		return this.dueDate;
-	}
+  public void setItem(Item item) {
+    this.item = item;
+  }
 
-	public void setDueDate(Date dueDate) {
-		this.dueDate = dueDate;
-	}
+  public int getQuantity() {
+    return this.quantity;
+  }
 
-	public List<Payment> getPayments() {
-		return this.payments;
-	}
+  public void setQuantity(int quantity) {
+    this.quantity = quantity;
+  }
 
-	public void setPayments(List<Payment> payments) {
-		this.payments = payments;
-	}
-	
+  public String getStatus() {
+    return this.status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
+  public String getLabel() {
+    return this.label;
+  }
+
+  public void setLabel(String label) {
+    this.label = label;
+  }
+
+  public Date getDepositDate() {
+    return this.depositDate;
+  }
+
+  public void setDepositDate(Date depositDate) {
+    this.depositDate = depositDate;
+  }
+
+  public Date getDueDate() {
+    return this.dueDate;
+  }
+
+  public void setDueDate(Date dueDate) {
+    this.dueDate = dueDate;
+  }
+
+  public List<Payment> getPayments() {
+    return this.payments;
+  }
+
+  public void setPayments(List<Payment> payments) {
+    this.payments = payments;
+  }
 }

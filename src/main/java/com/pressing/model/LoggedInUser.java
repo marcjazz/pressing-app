@@ -1,29 +1,28 @@
 package com.pressing.model;
 
 public class LoggedInUser {
-	private CustomUser user;
-	private String token;
-	
-	public LoggedInUser(CustomUser user, String token) {
-		super();
-		this.user = user;
-		this.token = token;
-	}
+  private CustomUser user;
+  private String token;
 
-	public CustomUser getUser() {
-		return this.user;
-	}
+  public LoggedInUser(CustomUser user, String token) {
+    super();
+    this.user = user;
+    this.token = token;
+  }
 
-	public void setUser(CustomUser user) {
-		this.user = user;
-	}
+  public CustomUser getUser() {
+    return this.user;
+  }
 
-	public String getToken() {
-		return this.token;
-	}
+  public void setUser(CustomUser user) {
+    this.user = user;
+  }
 
-	public void setToken(String token) {
-		this.token = token;
-	}
-	
+  public String getToken() {
+    return this.token;
+  }
+
+  public void setToken(String token) {
+    this.token = token;
+  }
 }

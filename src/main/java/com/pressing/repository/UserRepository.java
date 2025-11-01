@@ -1,15 +1,13 @@
 package com.pressing.repository;
 
+import com.pressing.model.CustomUser;
 import java.util.Collection;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 
-import com.pressing.model.CustomUser;
+public interface UserRepository extends JpaRepository<CustomUser, Long> {
 
-public interface UserRepository extends JpaRepository<CustomUser, Long>{
-	
-	CustomUser findByUsername(@Param("name") String name);
-	Collection<CustomUser> findByIsActive(@Param("isActive") boolean isActive);
+  CustomUser findByUsername(@Param("name") String name);
 
+  Collection<CustomUser> findByIsActive(@Param("isActive") boolean isActive);
 }

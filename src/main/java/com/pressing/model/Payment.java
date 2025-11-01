@@ -1,7 +1,7 @@
 package com.pressing.model;
 
-import java.util.Date;
-
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,84 +9,79 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import java.util.Date;
 
 @Entity
-@Table(name="payment")
+@Table(name = "payment")
 public class Payment {
 
-	@Id
-	@GeneratedValue
-	private Long id;
-	
-	@Column(nullable=false)
-	private double amount;
-	
-	@Column(nullable=false)
-	private Date time = new Date();
-	
-	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property="id")
-	@ManyToOne(optional=false)
-	@JoinColumn(name="customer_item_id", referencedColumnName="id")
-	private Transaction customerItem;
-	
-	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property="id")
-	@ManyToOne(optional=false)
-	@JoinColumn(name="payment_method_id", referencedColumnName = "id")
-	private PaymentMethod paymentMethod;
+  @Id @GeneratedValue private Long id;
 
-	public Payment() {
-		super();
-	}
+  @Column(nullable = false)
+  private double amount;
 
-	public Payment(double amount, Date time, Transaction customerItem, PaymentMethod paymentMethod) {
-		super();
-		this.amount = amount;
-		this.time = time;
-		this.customerItem = customerItem;
-		this.paymentMethod = paymentMethod;
-	}
+  @Column(nullable = false)
+  private Date time = new Date();
 
-	public Long getId() {
-		return this.id;
-	}
+  @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "customer_item_id", referencedColumnName = "id")
+  private Transaction customerItem;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+  @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "payment_method_id", referencedColumnName = "id")
+  private PaymentMethod paymentMethod;
 
-	public double getAmount() {
-		return this.amount;
-	}
+  public Payment() {
+    super();
+  }
 
-	public void setAmount(double amount) {
-		this.amount = amount;
-	}
+  public Payment(double amount, Date time, Transaction customerItem, PaymentMethod paymentMethod) {
+    super();
+    this.amount = amount;
+    this.time = time;
+    this.customerItem = customerItem;
+    this.paymentMethod = paymentMethod;
+  }
 
-	public Date getTime() {
-		return this.time;
-	}
+  public Long getId() {
+    return this.id;
+  }
 
-	public void setTime(Date time) {
-		this.time = time;
-	}
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-	public Transaction getCustomerItem() {
-		return this.customerItem;
-	}
+  public double getAmount() {
+    return this.amount;
+  }
 
-	public void setCustomerItem(Transaction customerItem) {
-		this.customerItem = customerItem;
-	}
+  public void setAmount(double amount) {
+    this.amount = amount;
+  }
 
-	public PaymentMethod getPaymentMethod() {
-		return this.paymentMethod;
-	}
+  public Date getTime() {
+    return this.time;
+  }
 
-	public void setPaymentMethod(PaymentMethod paymentMethod) {
-		this.paymentMethod = paymentMethod;
-	}
-	
+  public void setTime(Date time) {
+    this.time = time;
+  }
+
+  public Transaction getCustomerItem() {
+    return this.customerItem;
+  }
+
+  public void setCustomerItem(Transaction customerItem) {
+    this.customerItem = customerItem;
+  }
+
+  public PaymentMethod getPaymentMethod() {
+    return this.paymentMethod;
+  }
+
+  public void setPaymentMethod(PaymentMethod paymentMethod) {
+    this.paymentMethod = paymentMethod;
+  }
 }

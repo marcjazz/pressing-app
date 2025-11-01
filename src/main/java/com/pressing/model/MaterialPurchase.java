@@ -1,7 +1,5 @@
 package com.pressing.model;
 
-import java.util.Date;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,70 +7,68 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.util.Date;
 
 @Entity
-@Table(name="expense")
+@Table(name = "expense")
 public class MaterialPurchase {
 
-	@Id
-	@GeneratedValue
-	private Long id;
-	
-	@Column(nullable=false)
-	private int quantity;
-	
-	@Column(nullable=false)
-	private Date purchasedDate = new Date();
-	
-	@Column(nullable=false)
-	private Date depreciationDate = new Date();
-		
-	@ManyToOne(optional=false)
-	@JoinColumn(name="cleaning_material_id", referencedColumnName = "id")
-	private CleaningMaterial cleaningMaterial;
+  @Id @GeneratedValue private Long id;
 
-	public MaterialPurchase() {
-		super();
-	}
+  @Column(nullable = false)
+  private int quantity;
 
-	public Long getId() {
-		return this.id;
-	}
+  @Column(nullable = false)
+  private Date purchasedDate = new Date();
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+  @Column(nullable = false)
+  private Date depreciationDate = new Date();
 
-	public int getQuantity() {
-		return this.quantity;
-	}
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "cleaning_material_id", referencedColumnName = "id")
+  private CleaningMaterial cleaningMaterial;
 
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
-	}
+  public MaterialPurchase() {
+    super();
+  }
 
-	public Date getPurchasedDate() {
-		return this.purchasedDate;
-	}
+  public Long getId() {
+    return this.id;
+  }
 
-	public void setPurchasedDate(Date purchasedDate) {
-		this.purchasedDate = purchasedDate;
-	}
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-	public Date getDepreciationDate() {
-		return this.depreciationDate;
-	}
+  public int getQuantity() {
+    return this.quantity;
+  }
 
-	public void setDepreciationDate(Date depreciationDate) {
-		this.depreciationDate = depreciationDate;
-	}
+  public void setQuantity(int quantity) {
+    this.quantity = quantity;
+  }
 
-	public CleaningMaterial getCleaningMaterial() {
-		return this.cleaningMaterial;
-	}
+  public Date getPurchasedDate() {
+    return this.purchasedDate;
+  }
 
-	public void setCleaningMaterial(CleaningMaterial cleaningMaterial) {
-		this.cleaningMaterial = cleaningMaterial;
-	}
-	
+  public void setPurchasedDate(Date purchasedDate) {
+    this.purchasedDate = purchasedDate;
+  }
+
+  public Date getDepreciationDate() {
+    return this.depreciationDate;
+  }
+
+  public void setDepreciationDate(Date depreciationDate) {
+    this.depreciationDate = depreciationDate;
+  }
+
+  public CleaningMaterial getCleaningMaterial() {
+    return this.cleaningMaterial;
+  }
+
+  public void setCleaningMaterial(CleaningMaterial cleaningMaterial) {
+    this.cleaningMaterial = cleaningMaterial;
+  }
 }

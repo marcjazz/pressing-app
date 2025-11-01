@@ -1,7 +1,5 @@
 package com.pressing.model;
 
-import java.util.List;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,83 +7,81 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.List;
 
 @Entity
-@Table(name="customer")
+@Table(name = "customer")
 public class Customer {
 
-	@Id
-	@GeneratedValue
-	private Long id;
-	
-	@Column(nullable=false)
-	private String firstName;
-	
-	@Column(nullable=false)
-	private String lastName;
-	
-	@Column(nullable=false)
-	private String telephone;
-	
-	@Column(nullable=false, unique=true)
-	private String email;
-	
-	@OneToMany(mappedBy="customer", cascade=CascadeType.ALL)
-	private List<Transaction> customerItems;
-	
-	@Column(nullable=false)
-	private boolean isActive;
+  @Id @GeneratedValue private Long id;
 
-	public Customer() {
-		super();
-	}
+  @Column(nullable = false)
+  private String firstName;
 
-	public Long getId() {
-		return this.id;
-	}
+  @Column(nullable = false)
+  private String lastName;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+  @Column(nullable = false)
+  private String telephone;
 
-	public String getFirstName() {
-		return this.firstName;
-	}
+  @Column(nullable = false, unique = true)
+  private String email;
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+  @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+  private List<Transaction> customerItems;
 
-	public String getLastName() {
-		return this.lastName;
-	}
+  @Column(nullable = false)
+  private boolean isActive;
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+  public Customer() {
+    super();
+  }
 
-	public String getTelephone() {
-		return this.telephone;
-	}
+  public Long getId() {
+    return this.id;
+  }
 
-	public void setTelephone(String telephone) {
-		this.telephone = telephone;
-	}
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-	public String getEmail() {
-		return this.email;
-	}
+  public String getFirstName() {
+    return this.firstName;
+  }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
 
-	public boolean isActive() {
-		return this.isActive;
-	}
+  public String getLastName() {
+    return this.lastName;
+  }
 
-	public void setActive(boolean isActive) {
-		this.isActive = isActive;
-	}
-	
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
+
+  public String getTelephone() {
+    return this.telephone;
+  }
+
+  public void setTelephone(String telephone) {
+    this.telephone = telephone;
+  }
+
+  public String getEmail() {
+    return this.email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public boolean isActive() {
+    return this.isActive;
+  }
+
+  public void setActive(boolean isActive) {
+    this.isActive = isActive;
+  }
 }

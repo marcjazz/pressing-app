@@ -4,53 +4,52 @@ import java.util.Date;
 
 public class PaymentDTO {
 
-	private Long customerItemId;
-	private Long paymentMethodId;
-	private Date paymentDate;
-	private Double amount;
-	
-	public PaymentDTO() {
-		super();
-	}
+  private Long customerItemId;
+  private Long paymentMethodId;
+  private Date paymentDate;
+  private Double amount;
 
-	public PaymentDTO(Long customerItemId, Long paymentMethodId, Double amount, Date paymentDate) {
-		super();
-		this.customerItemId = customerItemId;
-		this.paymentMethodId = paymentMethodId;
-		this.amount = amount;
-		this.paymentDate = paymentDate;
-	}
+  public PaymentDTO() {
+    super();
+  }
 
-	public Long getCustomerItemId() {
-		return this.customerItemId;
-	}
+  public PaymentDTO(Long customerItemId, Long paymentMethodId, Double amount, Date paymentDate) {
+    super();
+    this.customerItemId = customerItemId;
+    this.paymentMethodId = paymentMethodId;
+    this.amount = amount;
+    this.paymentDate = paymentDate;
+  }
 
-	public void setCustomerItemId(Long customerItemId) {
-		this.customerItemId = customerItemId;
-	}
+  public Long getCustomerItemId() {
+    return this.customerItemId;
+  }
 
-	public Long getPaymentMethodId() {
-		return this.paymentMethodId;
-	}
+  public void setCustomerItemId(Long customerItemId) {
+    this.customerItemId = customerItemId;
+  }
 
-	public void setPaymentMethodId(Long paymentMethodId) {
-		this.paymentMethodId = paymentMethodId;
-	}
+  public Long getPaymentMethodId() {
+    return this.paymentMethodId;
+  }
 
-	public Double getAmount() {
-		return this.amount;
-	}
+  public void setPaymentMethodId(Long paymentMethodId) {
+    this.paymentMethodId = paymentMethodId;
+  }
 
-	public void setAmount(Double amount) {
-		this.amount = amount;
-	}
+  public Double getAmount() {
+    return this.amount;
+  }
 
-	public Date getPaymentDate() {
-		return this.paymentDate;
-	}
+  public void setAmount(Double amount) {
+    this.amount = amount;
+  }
 
-	public void setPaymentDate(Date paymentDate) {
-		this.paymentDate = paymentDate;
-	}	
-	
+  public Date getPaymentDate() {
+    return this.paymentDate;
+  }
+
+  public void setPaymentDate(Date paymentDate) {
+    this.paymentDate = paymentDate;
+  }
 }

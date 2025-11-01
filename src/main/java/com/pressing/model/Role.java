@@ -1,7 +1,5 @@
 package com.pressing.model;
 
-import java.util.List;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,79 +9,77 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-
+import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 
 @Entity
-@Table(name="role")
+@Table(name = "role")
 public class Role implements GrantedAuthority {
 
-	@Id
-	@GeneratedValue
-	private Long id;
-	
-	@Column(nullable=false, unique=true)
-	private String name;
-	
-	private String description;
-	
-	@Column(nullable=false)
-	@ManyToMany(mappedBy="roles")
-	private List<CustomUser> users;
-	
-	@Column(nullable=false)
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name="role_permission", 
-	joinColumns=@JoinColumn(name="role_id", nullable=false), 
-	inverseJoinColumns=@JoinColumn(name="permission_id", nullable=false))
-	private List<Permission> permissions;
-	
-	public Role() {
-		super();
-	}
+  @Id @GeneratedValue private Long id;
 
-	public Role(String name, String description, List<Permission> permissions) {
-		super();
-		this.name = name;
-		this.description = description;
-		this.permissions = permissions;
-	}
+  @Column(nullable = false, unique = true)
+  private String name;
 
-	public Long getId() {
-		return this.id;
-	}
-	
-	public void setId(Long id) {
-		this.id = id;
-	}
-	
-	public String getName() {
-		return this.name;
-	}
-	
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public String getDescription() {
-		return this.description;
-	}
-	
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
-	public List<Permission> getPermission() {
-		return this.permissions;
-	}
-	
-	public void setPermission(List<Permission> permission) {
-		this.permissions = permission;
-	}
+  private String description;
 
-	@Override
-	public String getAuthority() {
-		return name.toString();
-	}
-	
+  @Column(nullable = false)
+  @ManyToMany(mappedBy = "roles")
+  private List<CustomUser> users;
+
+  @Column(nullable = false)
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(
+      name = "role_permission",
+      joinColumns = @JoinColumn(name = "role_id", nullable = false),
+      inverseJoinColumns = @JoinColumn(name = "permission_id", nullable = false))
+  private List<Permission> permissions;
+
+  public Role() {
+    super();
+  }
+
+  public Role(String name, String description, List<Permission> permissions) {
+    super();
+    this.name = name;
+    this.description = description;
+    this.permissions = permissions;
+  }
+
+  public Long getId() {
+    return this.id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public String getName() {
+    return this.name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getDescription() {
+    return this.description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public List<Permission> getPermission() {
+    return this.permissions;
+  }
+
+  public void setPermission(List<Permission> permission) {
+    this.permissions = permission;
+  }
+
+  @Override
+  public String getAuthority() {
+    return name.toString();
+  }
 }

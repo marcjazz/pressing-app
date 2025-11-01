@@ -1,7 +1,5 @@
 package com.pressing.model;
 
-import java.util.List;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,61 +7,59 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.List;
 
 @Entity
-@Table(name="payment_method")
+@Table(name = "payment_method")
 public class PaymentMethod {
 
-	@Id
-	@GeneratedValue
-	private Long id;
-	
-	@Column(nullable=false, unique=true)
-	private String name;
-	
-	@Column(nullable=true)
-	private String description;
-	
-	@Column(nullable=false)
-	private boolean isActive;
-	
-	@OneToMany(mappedBy="paymentMethod", cascade=CascadeType.ALL)
-	private List<Payment> payments;
+  @Id @GeneratedValue private Long id;
 
-	public PaymentMethod() {
-		super();
-	}
+  @Column(nullable = false, unique = true)
+  private String name;
 
-	public Long getId() {
-		return this.id;
-	}
+  @Column(nullable = true)
+  private String description;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+  @Column(nullable = false)
+  private boolean isActive;
 
-	public String getName() {
-		return this.name;
-	}
+  @OneToMany(mappedBy = "paymentMethod", cascade = CascadeType.ALL)
+  private List<Payment> payments;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public PaymentMethod() {
+    super();
+  }
 
-	public String getDescription() {
-		return this.description;
-	}
+  public Long getId() {
+    return this.id;
+  }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-	public boolean isActive() {
-		return this.isActive;
-	}
+  public String getName() {
+    return this.name;
+  }
 
-	public void setActive(boolean isActive) {
-		this.isActive = isActive;
-	}
-	
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getDescription() {
+    return this.description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public boolean isActive() {
+    return this.isActive;
+  }
+
+  public void setActive(boolean isActive) {
+    this.isActive = isActive;
+  }
 }

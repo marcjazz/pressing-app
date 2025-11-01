@@ -1,77 +1,73 @@
 package com.pressing.service.implementation;
 
+import com.pressing.model.PaymentMethod;
+import com.pressing.repository.PaymentMethodRepository;
+import com.pressing.service.PaymentMethodService;
 import java.util.Collection;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
-import com.pressing.model.PaymentMethod;
-import com.pressing.repository.PaymentMethodRepository;
-import com.pressing.service.PaymentMethodService;
-
 @Service
 @Secured("ROLE_ADMINISTRATION")
-public class PaymentMethodServiceImpl implements PaymentMethodService{
-	
-	@Autowired
-	private PaymentMethodRepository paymentMethodRepository;
+public class PaymentMethodServiceImpl implements PaymentMethodService {
 
-	@Override
-	public Collection<PaymentMethod> findAll() {
-		
-		Collection<PaymentMethod> paymentMethod = paymentMethodRepository.findAll();
-		return paymentMethod;
-	}
+  @Autowired private PaymentMethodRepository paymentMethodRepository;
 
-	@Override
-	public PaymentMethod findById(Long id) {
-		
-		PaymentMethod paymentMethod = paymentMethodRepository.findById(id).orElse(null);
-		return paymentMethod;
-	}
+  @Override
+  public Collection<PaymentMethod> findAll() {
 
-	@Override
-	public PaymentMethod findByName(String name) {
-		
-		PaymentMethod paymentMethod = paymentMethodRepository.findByName(name);
-		return paymentMethod;
-	}
+    Collection<PaymentMethod> paymentMethod = paymentMethodRepository.findAll();
+    return paymentMethod;
+  }
 
-	@Override
-	public Collection<PaymentMethod> findByIsActive(boolean isActive) {
-		
-		Collection<PaymentMethod> paymentMethods = paymentMethodRepository.findByIsActive(isActive);
-		return paymentMethods;
-	}
+  @Override
+  public PaymentMethod findById(Long id) {
 
-	@Override
-	public PaymentMethod create(PaymentMethod paymentMethod) {
-		
-		if (paymentMethodRepository.existsById(paymentMethod.getId())) {
-			return null;
-		}
-		
-		PaymentMethod savedPaymentMethod = paymentMethodRepository.save(paymentMethod);
-		return savedPaymentMethod;
-	}
+    PaymentMethod paymentMethod = paymentMethodRepository.findById(id).orElse(null);
+    return paymentMethod;
+  }
 
-	@Override
-	public PaymentMethod update(PaymentMethod paymentMethod) {
+  @Override
+  public PaymentMethod findByName(String name) {
 
-		if (paymentMethodRepository.existsById(paymentMethod.getId())) {
-			PaymentMethod savedPaymentMethod = paymentMethodRepository.save(paymentMethod);
-			return savedPaymentMethod;
-		}
-		
-		return null;
-	}
+    PaymentMethod paymentMethod = paymentMethodRepository.findByName(name);
+    return paymentMethod;
+  }
 
-	@Override
-	public void deactivate(Long id) {
-		
-		PaymentMethod paymentMethod = findById(id);
-		paymentMethod.setActive(false);
-	}
+  @Override
+  public Collection<PaymentMethod> findByIsActive(boolean isActive) {
 
+    Collection<PaymentMethod> paymentMethods = paymentMethodRepository.findByIsActive(isActive);
+    return paymentMethods;
+  }
+
+  @Override
+  public PaymentMethod create(PaymentMethod paymentMethod) {
+
+    if (paymentMethodRepository.existsById(paymentMethod.getId())) {
+      return null;
+    }
+
+    PaymentMethod savedPaymentMethod = paymentMethodRepository.save(paymentMethod);
+    return savedPaymentMethod;
+  }
+
+  @Override
+  public PaymentMethod update(PaymentMethod paymentMethod) {
+
+    if (paymentMethodRepository.existsById(paymentMethod.getId())) {
+      PaymentMethod savedPaymentMethod = paymentMethodRepository.save(paymentMethod);
+      return savedPaymentMethod;
+    }
+
+    return null;
+  }
+
+  @Override
+  public void deactivate(Long id) {
+
+    PaymentMethod paymentMethod = findById(id);
+    paymentMethod.setActive(false);
+  }
 }

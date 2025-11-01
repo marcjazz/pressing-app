@@ -3,93 +3,98 @@ package com.pressing.model;
 import java.util.ArrayList;
 
 public class UserDTO {
-	private Long id;
-	private String firstName;
-	private String lastName;
-	private String username;
-	private String password;
-	private boolean isActive;
-	private ArrayList<Long> roleIds;
-	private String telephone;
-	
-	public UserDTO() {
-		super();
-	}
+  private Long id;
+  private String firstName;
+  private String lastName;
+  private String username;
+  private String password;
+  private boolean isActive;
+  private ArrayList<Long> roleIds;
+  private String telephone;
 
-	public UserDTO(Long id, String firstName, String lastName, String username, boolean isActive, Long roleId, String telephone) {
-		super();
-		this.id = id;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.username = username;
-		this.isActive = isActive;
-		this.roleIds.add(roleId);
-		this.telephone = telephone;
-		
-	}
+  public UserDTO() {
+    super();
+  }
 
-	public Long getId() {
-		return this.id;
-	}
+  public UserDTO(
+      Long id,
+      String firstName,
+      String lastName,
+      String username,
+      boolean isActive,
+      Long roleId,
+      String telephone) {
+    super();
+    this.id = id;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.username = username;
+    this.isActive = isActive;
+    this.roleIds.add(roleId);
+    this.telephone = telephone;
+  }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+  public Long getId() {
+    return this.id;
+  }
 
-	public String getFirstName() {
-		return this.firstName;
-	}
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+  public String getFirstName() {
+    return this.firstName;
+  }
 
-	public String getLastName() {
-		return this.lastName;
-	}
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+  public String getLastName() {
+    return this.lastName;
+  }
 
-	public String getUsername() {
-		return this.username;
-	}
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+  public String getUsername() {
+    return this.username;
+  }
 
-	public String getPassword() {
-		return this.password;
-	}
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+  public String getPassword() {
+    return this.password;
+  }
 
-	public boolean isActive() {
-		return this.isActive;
-	}
+  public void setPassword(String password) {
+    this.password = password;
+  }
 
-	public void setActive(boolean isActive) {
-		this.isActive = isActive;
-	}
+  public boolean isActive() {
+    return this.isActive;
+  }
 
-	public ArrayList<Long> getRoleIds() {
-		return this.roleIds;
-	}
+  public void setActive(boolean isActive) {
+    this.isActive = isActive;
+  }
 
-	public void setRoleIds(ArrayList<Long> roleIds) {
-		this.roleIds = roleIds;
-	}
+  public ArrayList<Long> getRoleIds() {
+    return this.roleIds;
+  }
 
-	public String getTelephone() {
-		return this.telephone;
-	}
+  public void setRoleIds(ArrayList<Long> roleIds) {
+    this.roleIds = roleIds;
+  }
 
-	public void setTelephone(String telephone) {
-		this.telephone = telephone;
-	}
-	
+  public String getTelephone() {
+    return this.telephone;
+  }
+
+  public void setTelephone(String telephone) {
+    this.telephone = telephone;
+  }
 }

@@ -1,75 +1,71 @@
 package com.pressing.service.implementation;
 
+import com.pressing.model.CleaningMaterial;
+import com.pressing.repository.CleaningMaterialRepository;
+import com.pressing.service.CleaningMaterialService;
 import java.util.Collection;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
-import com.pressing.model.CleaningMaterial;
-import com.pressing.repository.CleaningMaterialRepository;
-import com.pressing.service.CleaningMaterialService;
-
 @Service
 @Secured({"ROLE_MANAGEMENT", "ROLE_ADMINISTRATION"})
 public class CleaningMaterialServiceImpl implements CleaningMaterialService {
-	
-	@Autowired
-	private CleaningMaterialRepository cleaningMaterialRepository;
-	
-	@Override
-	public Collection<CleaningMaterial> findAll() {
-		
-		Collection<CleaningMaterial> cleaningMaterials;
-		cleaningMaterials = cleaningMaterialRepository.findAll();
-		return cleaningMaterials;
-	}
 
-	@Override
-	public CleaningMaterial findById(Long id) {
-		
-		CleaningMaterial cleaningMaterial;
-		cleaningMaterial = cleaningMaterialRepository.findById(id).orElse(null);
-		return cleaningMaterial;
-	}
+  @Autowired private CleaningMaterialRepository cleaningMaterialRepository;
 
-	@Override
-	public CleaningMaterial findByName(String name) {
+  @Override
+  public Collection<CleaningMaterial> findAll() {
 
-		CleaningMaterial cleaningMaterial;
-		cleaningMaterial = cleaningMaterialRepository.findByName(name);
-		return cleaningMaterial;
-	}
+    Collection<CleaningMaterial> cleaningMaterials;
+    cleaningMaterials = cleaningMaterialRepository.findAll();
+    return cleaningMaterials;
+  }
 
-	@Override
-	public CleaningMaterial create(CleaningMaterial cleaningMaterial) {
-		
-		if (cleaningMaterialRepository.findByName(cleaningMaterial.getName()) == null) {
-			CleaningMaterial savedCleaningMaterial;
-			savedCleaningMaterial = cleaningMaterialRepository.save(cleaningMaterial);
-			return savedCleaningMaterial;
-		}
-		
-		return null;
-	}
+  @Override
+  public CleaningMaterial findById(Long id) {
 
-	@Override
-	public CleaningMaterial update(CleaningMaterial cleaningMaterial) {
+    CleaningMaterial cleaningMaterial;
+    cleaningMaterial = cleaningMaterialRepository.findById(id).orElse(null);
+    return cleaningMaterial;
+  }
 
-		CleaningMaterial savedCleaningMaterial;
-		savedCleaningMaterial = cleaningMaterialRepository.save(cleaningMaterial);
-		return savedCleaningMaterial;
-	}
+  @Override
+  public CleaningMaterial findByName(String name) {
 
-	@Override
-	public void delete(Long id) {
-		
-		CleaningMaterial cleaningMaterial = findById(id);
-		if (cleaningMaterial == null) {
-			return;
-		}
-		
-		cleaningMaterialRepository.delete(cleaningMaterial);
-	}
+    CleaningMaterial cleaningMaterial;
+    cleaningMaterial = cleaningMaterialRepository.findByName(name);
+    return cleaningMaterial;
+  }
 
+  @Override
+  public CleaningMaterial create(CleaningMaterial cleaningMaterial) {
+
+    if (cleaningMaterialRepository.findByName(cleaningMaterial.getName()) == null) {
+      CleaningMaterial savedCleaningMaterial;
+      savedCleaningMaterial = cleaningMaterialRepository.save(cleaningMaterial);
+      return savedCleaningMaterial;
+    }
+
+    return null;
+  }
+
+  @Override
+  public CleaningMaterial update(CleaningMaterial cleaningMaterial) {
+
+    CleaningMaterial savedCleaningMaterial;
+    savedCleaningMaterial = cleaningMaterialRepository.save(cleaningMaterial);
+    return savedCleaningMaterial;
+  }
+
+  @Override
+  public void delete(Long id) {
+
+    CleaningMaterial cleaningMaterial = findById(id);
+    if (cleaningMaterial == null) {
+      return;
+    }
+
+    cleaningMaterialRepository.delete(cleaningMaterial);
+  }
 }

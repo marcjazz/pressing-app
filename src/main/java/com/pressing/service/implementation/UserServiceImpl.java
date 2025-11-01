@@ -1,82 +1,77 @@
 package com.pressing.service.implementation;
 
+import com.pressing.model.CustomUser;
+import com.pressing.repository.UserRepository;
+import com.pressing.service.UserService;
 import java.util.Collection;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.pressing.model.CustomUser;
-import com.pressing.repository.UserRepository;
-import com.pressing.service.UserService;
-
 @Service
 public class UserServiceImpl implements UserService {
-	
-	@Autowired
-	private UserRepository userRepository;
-	
-	@Autowired
-	PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-	@Override
-	@Secured("ROLE_ADMINISTRATION")
-	public Collection<CustomUser> findAll() {
-		
-		List<CustomUser> users = userRepository.findAll();
-		return users;
-	}
+  @Autowired private UserRepository userRepository;
 
-	@Override
-	public CustomUser findById(Long id) {
-		
-		CustomUser user = userRepository.findById(id).orElse(null);
-		return user;
-	}
+  @Autowired PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-	@Override
-	public CustomUser findByUserName(String username) {
-		
-		CustomUser user = userRepository.findByUsername(username);
-		return user;
-	}
+  @Override
+  @Secured("ROLE_ADMINISTRATION")
+  public Collection<CustomUser> findAll() {
 
-	@Override
-	public Collection<CustomUser> findByIsActive(boolean isActive) {
-		
-		Collection<CustomUser> users = userRepository.findByIsActive(isActive);
-		return users;
-	}
+    List<CustomUser> users = userRepository.findAll();
+    return users;
+  }
 
-	@Override
-	@Secured("ROLE_ADMINISTRATION")
-	public CustomUser create(CustomUser user) {
-		
-		if (findByUserName(user.getUsername()) != null) {
-			return null;
-		}
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		CustomUser savedUser = userRepository.save(user);
-		return savedUser;
-	}
+  @Override
+  public CustomUser findById(Long id) {
 
-	@Override
-	public CustomUser update(CustomUser user) {
-		
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		CustomUser savedUser = userRepository.save(user);
-		return savedUser;
-	}
+    CustomUser user = userRepository.findById(id).orElse(null);
+    return user;
+  }
 
-	@Override
-	@Secured("ROLE_ADMINISTRATION")
-	public void deactivate(Long id) {
-		
-		CustomUser user = findById(id);
-		user.setActive(false);
-	}
+  @Override
+  public CustomUser findByUserName(String username) {
 
+    CustomUser user = userRepository.findByUsername(username);
+    return user;
+  }
+
+  @Override
+  public Collection<CustomUser> findByIsActive(boolean isActive) {
+
+    Collection<CustomUser> users = userRepository.findByIsActive(isActive);
+    return users;
+  }
+
+  @Override
+  @Secured("ROLE_ADMINISTRATION")
+  public CustomUser create(CustomUser user) {
+
+    if (findByUserName(user.getUsername()) != null) {
+      return null;
+    }
+    user.setPassword(passwordEncoder.encode(user.getPassword()));
+    CustomUser savedUser = userRepository.save(user);
+    return savedUser;
+  }
+
+  @Override
+  public CustomUser update(CustomUser user) {
+
+    user.setPassword(passwordEncoder.encode(user.getPassword()));
+    CustomUser savedUser = userRepository.save(user);
+    return savedUser;
+  }
+
+  @Override
+  @Secured("ROLE_ADMINISTRATION")
+  public void deactivate(Long id) {
+
+    CustomUser user = findById(id);
+    user.setActive(false);
+  }
 }

@@ -7,9 +7,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "permission")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Permission {
 
   @Id @GeneratedValue private Long id;
@@ -21,32 +27,4 @@ public class Permission {
 
   @ManyToMany(mappedBy = "permissions")
   private List<Role> roles;
-
-  public Permission() {
-    super();
-  }
-
-  public Long getId() {
-    return this.id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public String getName() {
-    return this.name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getDescription() {
-    return this.description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
 }

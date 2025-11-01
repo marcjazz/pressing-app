@@ -10,9 +10,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.util.Date;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "payment")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Payment {
 
   @Id @GeneratedValue private Long id;
@@ -32,56 +38,4 @@ public class Payment {
   @ManyToOne(optional = false)
   @JoinColumn(name = "payment_method_id", referencedColumnName = "id")
   private PaymentMethod paymentMethod;
-
-  public Payment() {
-    super();
-  }
-
-  public Payment(double amount, Date time, Transaction customerItem, PaymentMethod paymentMethod) {
-    super();
-    this.amount = amount;
-    this.time = time;
-    this.customerItem = customerItem;
-    this.paymentMethod = paymentMethod;
-  }
-
-  public Long getId() {
-    return this.id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public double getAmount() {
-    return this.amount;
-  }
-
-  public void setAmount(double amount) {
-    this.amount = amount;
-  }
-
-  public Date getTime() {
-    return this.time;
-  }
-
-  public void setTime(Date time) {
-    this.time = time;
-  }
-
-  public Transaction getCustomerItem() {
-    return this.customerItem;
-  }
-
-  public void setCustomerItem(Transaction customerItem) {
-    this.customerItem = customerItem;
-  }
-
-  public PaymentMethod getPaymentMethod() {
-    return this.paymentMethod;
-  }
-
-  public void setPaymentMethod(PaymentMethod paymentMethod) {
-    this.paymentMethod = paymentMethod;
-  }
 }

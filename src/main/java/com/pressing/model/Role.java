@@ -10,10 +10,16 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 
 @Entity
 @Table(name = "role")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Role implements GrantedAuthority {
 
   @Id @GeneratedValue private Long id;
@@ -34,49 +40,6 @@ public class Role implements GrantedAuthority {
       joinColumns = @JoinColumn(name = "role_id", nullable = false),
       inverseJoinColumns = @JoinColumn(name = "permission_id", nullable = false))
   private List<Permission> permissions;
-
-  public Role() {
-    super();
-  }
-
-  public Role(String name, String description, List<Permission> permissions) {
-    super();
-    this.name = name;
-    this.description = description;
-    this.permissions = permissions;
-  }
-
-  public Long getId() {
-    return this.id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public String getName() {
-    return this.name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getDescription() {
-    return this.description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public List<Permission> getPermission() {
-    return this.permissions;
-  }
-
-  public void setPermission(List<Permission> permission) {
-    this.permissions = permission;
-  }
 
   @Override
   public String getAuthority() {

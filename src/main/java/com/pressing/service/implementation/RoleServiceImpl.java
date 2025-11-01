@@ -23,6 +23,9 @@ public class RoleServiceImpl implements RoleService {
 
   @Override
   public Role findById(Long id) {
+    if (id == null) {
+      return null;
+    }
 
     Role role = roleRepository.findById(id).orElse(null);
     return role;
@@ -37,6 +40,9 @@ public class RoleServiceImpl implements RoleService {
 
   @Override
   public Role create(Role role) {
+    if (role == null) {
+      return null;
+    }
 
     Role savedRole = roleRepository.save(role);
     return savedRole;
@@ -44,6 +50,9 @@ public class RoleServiceImpl implements RoleService {
 
   @Override
   public Role update(Role role) {
+    if (role == null || role.getId() == null) {
+      return null;
+    }
 
     Role updatedRole = roleRepository.save(role);
     return updatedRole;

@@ -23,6 +23,9 @@ public class CustomerServiceImpl implements CustomerService {
 
   @Override
   public Customer findById(Long id) {
+    if (id == null) {
+      return null;
+    }
 
     Customer customer = customerRepository.findById(id).orElse(null);
     return customer;
@@ -55,6 +58,9 @@ public class CustomerServiceImpl implements CustomerService {
 
   @Override
   public Customer update(Customer customer) {
+    if (customer == null) {
+      return null;
+    }
 
     Customer savedCustomer = customerRepository.save(customer);
     return savedCustomer;

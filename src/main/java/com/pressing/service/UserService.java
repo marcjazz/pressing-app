@@ -2,6 +2,7 @@ package com.pressing.service;
 
 import com.pressing.model.CustomUser;
 import java.util.Collection;
+import java.util.Optional;
 
 /** Service that provides CRUD operations for users */
 public interface UserService {
@@ -43,7 +44,7 @@ public interface UserService {
    * @param user
    * @return CustomUser object (Created user object)
    */
-  public CustomUser create(CustomUser user);
+  public Optional<CustomUser> create(CustomUser user);
 
   /**
    * Update an existing user's information.

@@ -8,9 +8,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.util.Date;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "expense")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class MaterialPurchase {
 
   @Id @GeneratedValue private Long id;
@@ -27,48 +33,4 @@ public class MaterialPurchase {
   @ManyToOne(optional = false)
   @JoinColumn(name = "cleaning_material_id", referencedColumnName = "id")
   private CleaningMaterial cleaningMaterial;
-
-  public MaterialPurchase() {
-    super();
-  }
-
-  public Long getId() {
-    return this.id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public int getQuantity() {
-    return this.quantity;
-  }
-
-  public void setQuantity(int quantity) {
-    this.quantity = quantity;
-  }
-
-  public Date getPurchasedDate() {
-    return this.purchasedDate;
-  }
-
-  public void setPurchasedDate(Date purchasedDate) {
-    this.purchasedDate = purchasedDate;
-  }
-
-  public Date getDepreciationDate() {
-    return this.depreciationDate;
-  }
-
-  public void setDepreciationDate(Date depreciationDate) {
-    this.depreciationDate = depreciationDate;
-  }
-
-  public CleaningMaterial getCleaningMaterial() {
-    return this.cleaningMaterial;
-  }
-
-  public void setCleaningMaterial(CleaningMaterial cleaningMaterial) {
-    this.cleaningMaterial = cleaningMaterial;
-  }
 }

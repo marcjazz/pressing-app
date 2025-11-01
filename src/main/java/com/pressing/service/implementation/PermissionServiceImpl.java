@@ -23,6 +23,9 @@ public class PermissionServiceImpl implements PermissionService {
 
   @Override
   public Permission findById(Long id) {
+    if (id == null) {
+      return null;
+    }
 
     Permission permission = permissionRepository.findById(id).orElse(null);
     return permission;
@@ -37,6 +40,9 @@ public class PermissionServiceImpl implements PermissionService {
 
   @Override
   public Permission create(Permission permission) {
+    if (permission == null) {
+      return null;
+    }
 
     Permission savedPermission = permissionRepository.save(permission);
     return savedPermission;
@@ -44,6 +50,9 @@ public class PermissionServiceImpl implements PermissionService {
 
   @Override
   public Permission update(Permission permission) {
+    if (permission == null || permission.getId() == null) {
+      return null;
+    }
 
     Permission updatedPermission = permissionRepository.save(permission);
     return updatedPermission;

@@ -5,6 +5,7 @@ import com.pressing.repository.UserRepository;
 import com.pressing.service.UserService;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -28,6 +29,9 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public CustomUser findById(Long id) {
+    if (id == null) {
+      return null;
+    }
 
     CustomUser user = userRepository.findById(id).orElse(null);
     return user;
@@ -49,14 +53,14 @@ public class UserServiceImpl implements UserService {
 
   @Override
   @Secured("ROLE_ADMINISTRATION")
-  public CustomUser create(CustomUser user) {
+  public Optional<CustomUser> create(CustomUser user) {
 
     if (findByUserName(user.getUsername()) != null) {
-      return null;
+      return Optional.empty();
     }
     user.setPassword(passwordEncoder.encode(user.getPassword()));
     CustomUser savedUser = userRepository.save(user);
-    return savedUser;
+    return Optional.of(savedUser);
   }
 
   @Override

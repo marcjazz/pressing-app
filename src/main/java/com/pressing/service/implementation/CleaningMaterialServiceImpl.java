@@ -24,9 +24,11 @@ public class CleaningMaterialServiceImpl implements CleaningMaterialService {
 
   @Override
   public CleaningMaterial findById(Long id) {
+    if (id == null) {
+      return null;
+    }
 
-    CleaningMaterial cleaningMaterial;
-    cleaningMaterial = cleaningMaterialRepository.findById(id).orElse(null);
+    CleaningMaterial cleaningMaterial = cleaningMaterialRepository.findById(id).orElse(null);
     return cleaningMaterial;
   }
 
@@ -52,9 +54,11 @@ public class CleaningMaterialServiceImpl implements CleaningMaterialService {
 
   @Override
   public CleaningMaterial update(CleaningMaterial cleaningMaterial) {
+    if (cleaningMaterial == null) {
+      return null;
+    }
 
-    CleaningMaterial savedCleaningMaterial;
-    savedCleaningMaterial = cleaningMaterialRepository.save(cleaningMaterial);
+    CleaningMaterial savedCleaningMaterial = cleaningMaterialRepository.save(cleaningMaterial);
     return savedCleaningMaterial;
   }
 

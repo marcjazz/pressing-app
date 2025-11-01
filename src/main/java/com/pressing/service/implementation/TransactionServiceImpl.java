@@ -24,6 +24,9 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Override
   public Transaction findById(Long transactionId) {
+    if (transactionId == null) {
+      return null;
+    }
 
     Transaction transaction = transactionRepository.findById(transactionId).orElse(null);
     return transaction;
@@ -45,12 +48,19 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Override
   public Transaction create(Transaction transaction) {
+    if (transaction == null) {
+      return null;
+    }
+
     Transaction savedCustomerItem = transactionRepository.save(transaction);
     return savedCustomerItem;
   }
 
   @Override
   public Transaction update(Transaction transaction) {
+    if (transaction == null || transaction.getId() == null) {
+      return null;
+    }
 
     Transaction updatedTransaction = transactionRepository.save(transaction);
     return updatedTransaction;

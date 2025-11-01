@@ -14,9 +14,15 @@ import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "customer_item")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Transaction implements Serializable {
 
   @Id @GeneratedValue private Long id;
@@ -49,98 +55,4 @@ public class Transaction implements Serializable {
   @Column(nullable = false)
   @OneToMany(mappedBy = "customerItem", cascade = CascadeType.ALL)
   private List<Payment> payments;
-
-  public Transaction() {
-    super();
-  }
-
-  public Transaction(
-      Customer customer,
-      Item item,
-      int quantity,
-      String status,
-      String label,
-      Date dueDate,
-      Date depositDate) {
-    super();
-    this.customer = customer;
-    this.item = item;
-    this.quantity = quantity;
-    this.status = status;
-    this.label = label;
-    this.dueDate = dueDate;
-    this.depositDate = depositDate;
-  }
-
-  public Long getId() {
-    return this.id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public Customer getCustomer() {
-    return this.customer;
-  }
-
-  public void setCustomer(Customer customer) {
-    this.customer = customer;
-  }
-
-  public Item getItem() {
-    return this.item;
-  }
-
-  public void setItem(Item item) {
-    this.item = item;
-  }
-
-  public int getQuantity() {
-    return this.quantity;
-  }
-
-  public void setQuantity(int quantity) {
-    this.quantity = quantity;
-  }
-
-  public String getStatus() {
-    return this.status;
-  }
-
-  public void setStatus(String status) {
-    this.status = status;
-  }
-
-  public String getLabel() {
-    return this.label;
-  }
-
-  public void setLabel(String label) {
-    this.label = label;
-  }
-
-  public Date getDepositDate() {
-    return this.depositDate;
-  }
-
-  public void setDepositDate(Date depositDate) {
-    this.depositDate = depositDate;
-  }
-
-  public Date getDueDate() {
-    return this.dueDate;
-  }
-
-  public void setDueDate(Date dueDate) {
-    this.dueDate = dueDate;
-  }
-
-  public List<Payment> getPayments() {
-    return this.payments;
-  }
-
-  public void setPayments(List<Payment> payments) {
-    this.payments = payments;
-  }
 }

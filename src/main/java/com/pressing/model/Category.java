@@ -8,9 +8,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "category")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Category {
 
   @Id @GeneratedValue private Long id;
@@ -23,38 +29,4 @@ public class Category {
 
   @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
   private List<Item> items;
-
-  public Category() {
-    super();
-  }
-
-  public Category(String name, String description) {
-    super();
-    this.name = name;
-    this.description = description;
-  }
-
-  public Long getId() {
-    return this.id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public String getName() {
-    return this.name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getDescription() {
-    return this.description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
 }

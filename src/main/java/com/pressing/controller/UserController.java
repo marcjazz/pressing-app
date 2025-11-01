@@ -8,10 +8,12 @@ import com.pressing.service.UserService;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -81,7 +83,7 @@ public class UserController {
       value = "/{id}",
       method = RequestMethod.GET,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<CustomUser> getUserById(@PathVariable("id") Long userId) {
+  public ResponseEntity<CustomUser> getUserById(@NonNull @PathVariable("id") Long userId) {
 
     CustomUser user = userService.findById(userId);
     if (user == null) {
@@ -107,19 +109,19 @@ public class UserController {
     while (user.getRoleIds().size() > count) {
       roles.add(roleService.findById(user.getRoleIds().get(count++)));
     }
-    CustomUser newUser =
-        new CustomUser(
-            user.getFirstName(),
-            user.getLastName(),
-            user.getUsername(),
-            user.getPassword(),
-            user.isActive(),
-            roles,
-            user.getTelephone());
-    newUser = userService.create(newUser);
-    if (newUser == null) {
+    CustomUser newUser = new CustomUser();
+    newUser.setFirstName(user.getFirstName());
+    newUser.setLastName(user.getLastName());
+    newUser.setUsername(user.getUsername());
+    newUser.setPassword(user.getPassword());
+    newUser.setActive(user.isActive());
+    newUser.setRoles(roles);
+    newUser.setTelephone(user.getTelephone());
+    Optional<CustomUser> createdUser = userService.create(newUser);
+    if (!createdUser.isPresent()) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+    newUser = createdUser.get();
 
     return new ResponseEntity<>(newUser, HttpStatus.CREATED);
   }
@@ -135,13 +137,14 @@ public class UserController {
       method = RequestMethod.PUT,
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<CustomUser> updateUser(@RequestBody UserDTO user) {
+  public ResponseEntity<CustomUser> updateUser(
+      @NonNull @PathVariable("userId") Long userId, @RequestBody UserDTO user) {
     int count = 0;
     List<Role> roles = new ArrayList<>();
     while (user.getRoleIds().size() > count) {
       roles.add(roleService.findById(user.getRoleIds().get(count++)));
     }
-    CustomUser updateUser = userService.findById(user.getId());
+    CustomUser updateUser = userService.findById(userId);
     updateUser.setFirstName(user.getFirstName());
     updateUser.setLastName(user.getLastName());
     updateUser.setPassword(user.getPassword());
@@ -163,7 +166,7 @@ public class UserController {
    * @return HTTP status 204, .
    */
   @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-  public ResponseEntity<CustomUser> deactivateUser(@PathVariable("userId") Long userId) {
+  public ResponseEntity<CustomUser> deactivateUser(@NonNull @PathVariable("userId") Long userId) {
 
     userService.deactivate(userId);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);

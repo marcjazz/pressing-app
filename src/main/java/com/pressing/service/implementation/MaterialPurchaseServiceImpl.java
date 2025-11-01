@@ -24,6 +24,9 @@ public class MaterialPurchaseServiceImpl implements MaterialPurchaseService {
 
   @Override
   public MaterialPurchase findById(Long id) {
+    if (id == null) {
+      return null;
+    }
 
     MaterialPurchase materialPurchase = materialpurchaserepository.findById(id).orElse(null);
     return materialPurchase;
@@ -47,6 +50,9 @@ public class MaterialPurchaseServiceImpl implements MaterialPurchaseService {
 
   @Override
   public MaterialPurchase create(MaterialPurchase purchase) {
+    if (purchase == null) {
+      return null;
+    }
 
     MaterialPurchase savedPurchase = materialpurchaserepository.save(purchase);
     return savedPurchase;
@@ -54,6 +60,9 @@ public class MaterialPurchaseServiceImpl implements MaterialPurchaseService {
 
   @Override
   public MaterialPurchase update(MaterialPurchase purchase) {
+    if (purchase == null) {
+      return null;
+    }
 
     MaterialPurchase updatedPurchase = materialpurchaserepository.save(purchase);
     return updatedPurchase;

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -101,7 +102,7 @@ public class PaymentMethodController {
       method = RequestMethod.GET,
       produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Collection<Payment>> getPaymentMethodPayments(
-      @PathVariable("methodId") Long methodId) {
+      @NonNull @PathVariable("methodId") Long methodId) {
 
     Collection<Payment> payments = paymentService.findPaymentWithPaymentMethod(methodId);
     if (payments == null) {

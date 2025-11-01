@@ -23,6 +23,9 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 
   @Override
   public PaymentMethod findById(Long id) {
+    if (id == null) {
+      return null;
+    }
 
     PaymentMethod paymentMethod = paymentMethodRepository.findById(id).orElse(null);
     return paymentMethod;
@@ -44,6 +47,9 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 
   @Override
   public PaymentMethod create(PaymentMethod paymentMethod) {
+    if (paymentMethod == null) {
+      return null;
+    }
 
     if (paymentMethodRepository.existsById(paymentMethod.getId())) {
       return null;
@@ -55,6 +61,9 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 
   @Override
   public PaymentMethod update(PaymentMethod paymentMethod) {
+    if (paymentMethod == null) {
+      return null;
+    }
 
     if (paymentMethodRepository.existsById(paymentMethod.getId())) {
       PaymentMethod savedPaymentMethod = paymentMethodRepository.save(paymentMethod);

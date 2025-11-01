@@ -27,6 +27,9 @@ public class ItemServiceImpl implements ItemService {
 
   @Override
   public Item findById(Long id) {
+    if (id == null) {
+      return null;
+    }
 
     Item item = itemRepository.findById(id).orElse(null);
     return item;
@@ -52,6 +55,9 @@ public class ItemServiceImpl implements ItemService {
 
   @Override
   public Item update(Item item) {
+    if (item == null) {
+      return null;
+    }
 
     Item updatedItem = itemRepository.save(item);
     return updatedItem;
@@ -70,6 +76,9 @@ public class ItemServiceImpl implements ItemService {
 
   @Override
   public Collection<Item> findCategoryItems(Long categoryId) {
+    if (categoryId == null) {
+      return null;
+    }
 
     Category category = categoryRepository.findById(categoryId).orElse(null);
     Collection<Item> items = itemRepository.findByCategory(category);

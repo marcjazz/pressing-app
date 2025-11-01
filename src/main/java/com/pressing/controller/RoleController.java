@@ -93,7 +93,7 @@ public class RoleController {
   public ResponseEntity<Collection<Permission>> getRolePermissions(
       @PathVariable("roleId") Long roleId) {
 
-    Collection<Permission> permissions = roleService.findById(roleId).getPermission();
+    Collection<Permission> permissions = roleService.findById(roleId).getPermissions();
     if (permissions == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
@@ -117,7 +117,10 @@ public class RoleController {
     while (role.getPermissionIds().size() > count) {
       permissions.add(permissionService.findById(role.getPermissionIds().get(count++)));
     }
-    Role newRole = new Role(role.getName(), role.getDescription(), permissions);
+    Role newRole = new Role();
+    newRole.setName(role.getName());
+    newRole.setDescription(role.getDescription());
+    newRole.setPermissions(permissions);
     newRole = roleService.create(newRole);
     if (newRole == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -145,7 +148,7 @@ public class RoleController {
     }
     Role newRole = roleService.findById(role.getId());
     newRole.setDescription(role.getDescription());
-    newRole.setPermission(permissions);
+    newRole.setPermissions(permissions);
     newRole = roleService.create(newRole);
     newRole = roleService.update(newRole);
 

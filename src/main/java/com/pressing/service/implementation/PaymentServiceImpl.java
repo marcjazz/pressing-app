@@ -63,6 +63,9 @@ public class PaymentServiceImpl implements PaymentService {
 
   @Override
   public Payment create(Payment payment) {
+    if (payment == null) {
+      return null;
+    }
 
     Payment savedPayment = paymentRepository.save(payment);
     return savedPayment;
@@ -70,6 +73,9 @@ public class PaymentServiceImpl implements PaymentService {
 
   @Override
   public Payment update(Payment payment) {
+    if (payment == null || payment.getId() == null) {
+      return null;
+    }
 
     Payment updatedPayment = paymentRepository.save(payment);
     return updatedPayment;

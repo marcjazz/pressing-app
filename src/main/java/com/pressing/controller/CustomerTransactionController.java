@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -124,7 +125,7 @@ public class CustomerTransactionController {
       method = RequestMethod.GET,
       produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Transaction> getTransactionById(
-      @PathVariable("transactionId") Long transactionId) {
+      @NonNull @PathVariable("transactionId") Long transactionId) {
 
     Transaction transaction = transactionService.findById(transactionId);
     if (transaction == null) {
@@ -145,7 +146,7 @@ public class CustomerTransactionController {
       method = RequestMethod.GET,
       produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Collection<Payment>> getTransactionPayments(
-      @PathVariable("transactionId") Long transactionId) {
+      @NonNull @PathVariable("transactionId") Long transactionId) {
 
     Collection<Payment> payments = transactionService.findById(transactionId).getPayments();
     if (payments == null) {
@@ -169,13 +170,16 @@ public class CustomerTransactionController {
 
     Transaction transaction =
         new Transaction(
+            null, // id
             customerItem.getCustomer(),
             customerItem.getItem(),
             customerItem.getQuantity(),
             customerItem.getStatus(),
             customerItem.getLabel(),
+            customerItem.getDepositDate(),
             customerItem.getDueDate(),
-            customerItem.getDepositDate());
+            null // payments
+            );
     transaction = transactionService.create(transaction);
     if (transaction == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -221,6 +225,7 @@ public class CustomerTransactionController {
   public ResponseEntity<Payment> depositePayment(@RequestBody PaymentDTO paymentDTO) {
     Payment payment =
         new Payment(
+            null, // id
             paymentDTO.getAmount(),
             paymentDTO.getPaymentDate(),
             transactionService.findById(paymentDTO.getCustomerItemId()),

@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 
 @Entity
-@Table(name = "role")
+@Table(name = "roles")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -36,7 +36,7 @@ public class Role implements GrantedAuthority {
   @Column(nullable = false)
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
-      name = "role_permission",
+      name = "role_permissions",
       joinColumns = @JoinColumn(name = "role_id", nullable = false),
       inverseJoinColumns = @JoinColumn(name = "permission_id", nullable = false))
   private List<Permission> permissions;

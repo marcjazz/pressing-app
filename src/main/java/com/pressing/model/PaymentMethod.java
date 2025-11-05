@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.lang.NonNull;
 
 @Entity
-@Table(name = "payment_method")
+@Table(name = "payment_methods")
 @Data
 @NoArgsConstructor
 public class PaymentMethod {

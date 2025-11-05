@@ -15,7 +15,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -41,7 +41,7 @@ public class CustomUser {
   @Column(nullable = false)
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
-      name = "user_role",
+      name = "user_roles",
       joinColumns = @JoinColumn(name = "user_id"),
       inverseJoinColumns = @JoinColumn(name = "role_id"))
   private List<Role> roles;

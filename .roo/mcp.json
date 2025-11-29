@@ -1,12 +1,1 @@
-{
-  "mcpServers": {
-    "postgres": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-postgres",
-        "postgresql://postgres:postgres@localhost:5432/pressing"
-      ]
-    }
-  }
-}
+{"mcpServers":{"postgres":{"command":"npx","args":["-y","@modelcontextprotocol/server-postgres","postgresql://postgres:postgres@localhost:5432/pressing"]},"filesystem":{"command":"npx","args":["-y","@modelcontextprotocol/server-filesystem","/home/marco/Projects/playground/pressing-app"],"alwaysAllow":[]}}}

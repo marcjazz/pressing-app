@@ -14,72 +14,50 @@ plugins {
 	id 'java'
 	id 'eclipse'
 	id 'application'
-	id 'org.springframework.boot' version '3.1.5'
-	id 'io.spring.dependency-management' version '1.1.3'
-	id 'com.diffplug.spotless' version '6.23.0'
+	id 'org.springframework.boot' version '3.1.5' apply false
+	id 'io.spring.dependency-management' version '1.1.3' apply false
+	id 'com.diffplug.spotless' version '6.23.0' apply false
 	id 'org.flywaydb.flyway' version '9.16.3' // Use the same Flyway version as in dependencies
 }
 
-bootJar {
-	application {
-		mainClassName = 'com.pressing.Application'
-	}
-	
-    archiveBaseName = 'pressing-app'
-    version = '0.0.1'
-    archiveFileName = "pressing-app-0.0.1.jar"
-    mainClass = 'com.pressing.util.BcryptHashGenerator'
-}
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'com.diffplug.spotless'
 
-// Use Java 21 as the project language level and prefer Gradle Java toolchains
-sourceCompatibility = 21
-targetCompatibility = 21
+    // Use Java 21 as the project language level and prefer Gradle Java toolchains
+    sourceCompatibility = 21
+    targetCompatibility = 21
 
-// Configure the Java toolchain to request a Java 21 JDK for compilation and runtime tasks
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
-	}
-	
-	spotless {
-	    java {
-	        target 'src/**/*.java'
-	        googleJavaFormat()
-	        trimTrailingWhitespace()
-	        endWithNewline()
-	    }
-	}
-}
+    // Configure the Java toolchain to request a Java 21 JDK for compilation and runtime tasks
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+        spotless {
+            java {
+                target 'src/**/*.java'
+                googleJavaFormat()
+                trimTrailingWhitespace()
+                endWithNewline()
+            }
+        }
+    }
 
+    // Ensure the compiler targets Java 21 bytecode where possible
+    tasks.withType(JavaCompile) {
+        options.release = 21
+    }
 
-// Ensure the compiler targets Java 21 bytecode where possible
-tasks.withType(JavaCompile) {
-	options.release = 21
-}
+    repositories {
+        mavenCentral()
+    }
 
-repositories {
-	mavenCentral()
-}
-
-
-dependencies {
-	implementation('org.springframework.boot:spring-boot-starter-actuator')
-	implementation('org.springframework.boot:spring-boot-starter-data-jpa')
-	implementation('org.postgresql:postgresql')
-	implementation("org.flywaydb:flyway-core")
-	implementation('org.springframework.boot:spring-boot-starter-security')
-	implementation('org.springframework.boot:spring-boot-starter-aop')
-	implementation('org.springframework.boot:spring-boot-starter-web')
-	compileOnly('org.projectlombok:lombok')
-	annotationProcessor('org.projectlombok:lombok')
-	testImplementation('org.springframework.boot:spring-boot-starter-test')
-	testImplementation('org.springframework.security:spring-security-test')
-}
-
-flyway {
-    url = 'jdbc:postgresql://localhost:5432/pressing'
-    user = 'postgres'
-    password = 'postgres'
-    locations = ['classpath:db/migration']
+    dependencies {
+        compileOnly('org.projectlombok:lombok')
+        annotationProcessor('org.projectlombok:lombok')
+    }
 }
 

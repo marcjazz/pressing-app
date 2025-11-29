@@ -1,0 +1,2 @@
+rootProject.name = 'pressing-app'
+include 'pressing-dto', 'pressing-web', 'pressing-service', 'pressing-data', 'pressing-service-impl'

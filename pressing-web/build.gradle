@@ -1,0 +1,28 @@
+dependencies {
+    implementation(project(':pressing-service-impl'))
+    implementation(project(':pressing-service'))
+    implementation(project(':pressing-dto'))
+    implementation(project(':pressing-data'))
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    implementation('org.springframework.boot:spring-boot-starter-security')
+}
+
+apply plugin: 'application'
+
+bootJar {
+    archiveBaseName = 'pressing-app'
+    version = '0.0.1'
+    archiveFileName = "pressing-app-0.0.1.jar"
+    mainClass = 'com.pressing.Application'
+}
+
+application {
+    mainClass = 'com.pressing.Application'
+}
+
+flyway {
+    url = 'jdbc:postgresql://localhost:5432/pressing'
+    user = 'postgres'
+    password = 'postgres'
+    locations = ['classpath:db/migration']
+}

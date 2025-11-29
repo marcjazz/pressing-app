@@ -1,0 +1,6 @@
+dependencies {
+    implementation(project(':pressing-dto'))
+    implementation(project(':pressing-data'))
+}
+
+bootJar.enabled = false

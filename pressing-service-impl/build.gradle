@@ -1,0 +1,10 @@
+dependencies {
+    implementation(project(':pressing-service'))
+    implementation(project(':pressing-data'))
+    implementation(project(':pressing-dto'))
+    implementation('org.springframework.boot:spring-boot-starter')
+    implementation('org.springframework.boot:spring-boot-starter-security')
+    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+}
+
+bootJar.enabled = false

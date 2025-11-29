@@ -7,6 +7,9 @@ import com.pressing.service.UserService;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -42,29 +45,26 @@ public class CleaningMaterialController {
    * @return Collection of cleaning materials or material with the given name
    */
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Collection<CleaningMaterial>> getCleaningMaterials(
-      @RequestParam(value = "materialName", required = false) String materialName) {
+  public ResponseEntity<Page<CleaningMaterial>> getCleaningMaterials(
+      @RequestParam(value = "materialName", required = false) String materialName, Pageable pageable) {
 
     Merchant merchant = userService.getCurrentUser().getMerchant();
     if (merchant == null) {
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
-    Collection<CleaningMaterial> materials = new ArrayList<>();
     if (materialName != null) {
+      Collection<CleaningMaterial> materials = new ArrayList<>();
       CleaningMaterial material = cleaningMaterialService.findByName(materialName);
       if (material != null && material.getMerchant().equals(merchant)) {
         materials.add(material);
       }
+      Page<CleaningMaterial> singleResult = new PageImpl<>(new ArrayList<>(materials));
+      return new ResponseEntity<>(singleResult, HttpStatus.OK);
     } else {
-      Collection<CleaningMaterial> allMaterials = cleaningMaterialService.findAll();
-      materials.addAll(
-          allMaterials.stream()
-              .filter(material -> material.getMerchant().equals(merchant))
-              .collect(Collectors.toList()));
+      Page<CleaningMaterial> materials = cleaningMaterialService.findByMerchant(merchant, pageable);
+      return new ResponseEntity<>(materials, HttpStatus.OK);
     }
-
-    return new ResponseEntity<>(materials, HttpStatus.OK);
   }
 
   /**

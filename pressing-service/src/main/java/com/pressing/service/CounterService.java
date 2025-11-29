@@ -3,6 +3,8 @@ package com.pressing.service;
 import com.pressing.model.Counter;
 import com.pressing.model.Merchant;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface CounterService {
 
@@ -10,7 +12,7 @@ public interface CounterService {
 
   Counter findById(Long id);
 
-  List<Counter> findAll();
+  Page<Counter> findAll(Pageable pageable);
 
   void delete(Long id);
 

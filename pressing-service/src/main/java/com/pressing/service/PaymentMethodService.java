@@ -1,7 +1,10 @@
 package com.pressing.service;
 
+import com.pressing.model.Merchant;
 import com.pressing.model.PaymentMethod;
 import java.util.Collection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /** Service that provides CRUD operations for payment methods */
 public interface PaymentMethodService {
@@ -11,7 +14,7 @@ public interface PaymentMethodService {
    *
    * @return Collection of payment methods
    */
-  public Collection<PaymentMethod> findAll();
+  public Page<PaymentMethod> findAll(Pageable pageable);
 
   /**
    * Find a payment method by Id.
@@ -36,6 +39,10 @@ public interface PaymentMethodService {
    * @return Collection PaymentMethod object
    */
   public Collection<PaymentMethod> findByIsActive(boolean isActive);
+
+  public Page<PaymentMethod> findByMerchant(Merchant merchant, Pageable pageable);
+
+  public Page<PaymentMethod> findByMerchantAndIsActive(Merchant merchant, boolean isActive, Pageable pageable);
 
   /**
    * Create new payment method.

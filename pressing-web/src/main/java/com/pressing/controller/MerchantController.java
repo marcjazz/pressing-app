@@ -3,6 +3,8 @@ package com.pressing.controller;
 import com.pressing.model.Merchant;
 import com.pressing.service.MerchantService;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +33,8 @@ public class MerchantController {
   }
 
   @GetMapping
-  public ResponseEntity<List<Merchant>> findAll() {
-    return new ResponseEntity<>(merchantService.findAll(), HttpStatus.OK);
+  public ResponseEntity<Page<Merchant>> findAll(Pageable pageable) {
+    return new ResponseEntity<>(merchantService.findAll(pageable), HttpStatus.OK);
   }
 
   @DeleteMapping("/{id}")

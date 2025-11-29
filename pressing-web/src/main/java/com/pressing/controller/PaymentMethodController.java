@@ -9,7 +9,11 @@ import com.pressing.service.PaymentService;
 import com.pressing.service.UserService;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -49,46 +53,33 @@ public class PaymentMethodController {
    * @return Collection of payment methods or payment method with the given name
    */
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Collection<PaymentMethod>> getPaymentMethods(
+  public ResponseEntity<Page<PaymentMethod>> getPaymentMethods(
       @RequestParam(value = "methodName", required = false) String methodName,
-      @RequestParam(value = "active", required = false) String isActive) {
+      @RequestParam(value = "active", required = false) String isActive,
+      Pageable pageable) {
 
     Merchant merchant = userService.getCurrentUser().getMerchant();
     if (merchant == null) {
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
-    Collection<PaymentMethod> paymentMethods = new ArrayList<>();
+    Page<PaymentMethod> paymentMethods;
     if (methodName != null) {
       PaymentMethod paymentMethod = paymentMethodService.findByName(methodName);
       if (paymentMethod != null && paymentMethod.getMerchant().equals(merchant)) {
-        paymentMethods.add(paymentMethod);
+        paymentMethods = new PageImpl<>(Collections.singletonList(paymentMethod));
+      } else {
+        paymentMethods = Page.empty();
       }
     } else if (isActive != null) {
-      if (isActive.compareToIgnoreCase("true") == 0) {
-        Collection<PaymentMethod> activePaymentMethods = paymentMethodService.findByIsActive(true);
-        paymentMethods.addAll(
-            activePaymentMethods.stream()
-                .filter(pm -> pm.getMerchant().equals(merchant))
-                .collect(Collectors.toList()));
-      } else if (isActive.compareToIgnoreCase("false") == 0) {
-        Collection<PaymentMethod> deactivatedPaymentMethods =
-            paymentMethodService.findByIsActive(false);
-        paymentMethods.addAll(
-            deactivatedPaymentMethods.stream()
-                .filter(pm -> pm.getMerchant().equals(merchant))
-                .collect(Collectors.toList()));
-      }
-
+      boolean active = isActive.compareToIgnoreCase("true") == 0;
+      paymentMethods = paymentMethodService.findByMerchantAndIsActive(merchant, active, pageable);
     } else {
-      Collection<PaymentMethod> allPaymentMethod = paymentMethodService.findAll();
-      paymentMethods.addAll(
-          allPaymentMethod.stream()
-              .filter(pm -> pm.getMerchant().equals(merchant))
-              .collect(Collectors.toList()));
+      paymentMethods = paymentMethodService.findByMerchant(merchant, pageable);
     }
 
     return new ResponseEntity<>(paymentMethods, HttpStatus.OK);
+  }
   }
 
   /**

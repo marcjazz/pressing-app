@@ -3,6 +3,8 @@ package com.pressing.controller;
 import com.pressing.model.Plan;
 import com.pressing.service.PlanService;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +29,8 @@ public class PlanController {
   }
 
   @GetMapping
-  public ResponseEntity<List<Plan>> getAllPlans() {
-    List<Plan> plans = planService.findAll();
+  public ResponseEntity<Page<Plan>> getAllPlans(Pageable pageable) {
+    Page<Plan> plans = planService.findAll(pageable);
     return new ResponseEntity<>(plans, HttpStatus.OK);
   }
 

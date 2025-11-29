@@ -2,6 +2,8 @@ package com.pressing.service;
 
 import com.pressing.model.Merchant;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface MerchantService {
 
@@ -9,7 +11,7 @@ public interface MerchantService {
 
   Merchant findById(Long id);
 
-  List<Merchant> findAll();
+  Page<Merchant> findAll(Pageable pageable);
 
   void delete(Long id);
 }

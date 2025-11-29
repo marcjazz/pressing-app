@@ -1,7 +1,10 @@
 package com.pressing.service;
 
 import com.pressing.model.Item;
+import com.pressing.model.Merchant;
 import java.util.Collection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /** Service that provides CRUD operations for items */
 public interface ItemService {
@@ -11,7 +14,7 @@ public interface ItemService {
    *
    * @return Collection of items
    */
-  public Collection<Item> findAll();
+  public Page<Item> findAll(Pageable pageable);
 
   /**
    * Find an item by Id.
@@ -36,6 +39,8 @@ public interface ItemService {
    * @return Collection of items
    */
   public Collection<Item> findCategoryItems(Long id);
+
+  public Page<Item> findByMerchant(Merchant merchant, Pageable pageable);
 
   /**
    * Create new Item.

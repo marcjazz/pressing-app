@@ -2,10 +2,15 @@ package com.pressing.service.implementation;
 
 import com.pressing.model.Category;
 import com.pressing.model.Item;
+import com.pressing.model.Merchant;
 import com.pressing.repository.CategoryRepository;
 import com.pressing.repository.ItemRepository;
 import com.pressing.service.ItemService;
 import java.util.Collection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
@@ -19,13 +24,19 @@ public class ItemServiceImpl implements ItemService {
   @Autowired private CategoryRepository categoryRepository;
 
   @Override
-  public Collection<Item> findAll() {
-
-    Collection<Item> items = itemRepository.findAll();
-    return items;
+  @Cacheable("items")
+  public Page<Item> findAll(Pageable pageable) {
+    return itemRepository.findAll(pageable);
   }
 
   @Override
+  @Cacheable(value = "itemsByMerchant", key = "#merchant.id")
+  public Page<Item> findByMerchant(Merchant merchant, Pageable pageable) {
+    return itemRepository.findByMerchant(merchant, pageable);
+  }
+
+  @Override
+  @Cacheable(value = "item", key = "#id")
   public Item findById(Long id) {
     if (id == null) {
       return null;
@@ -43,6 +54,7 @@ public class ItemServiceImpl implements ItemService {
   }
 
   @Override
+  @CacheEvict(value = {"items", "item", "itemsByMerchant"}, allEntries = true)
   public Item create(Item item) {
 
     if (itemRepository.findByName(item.getName()) == null) {
@@ -54,6 +66,7 @@ public class ItemServiceImpl implements ItemService {
   }
 
   @Override
+  @CacheEvict(value = {"items", "item", "itemsByMerchant"}, allEntries = true)
   public Item update(Item item) {
     if (item == null) {
       return null;
@@ -64,6 +77,7 @@ public class ItemServiceImpl implements ItemService {
   }
 
   @Override
+  @CacheEvict(value = {"items", "item", "itemsByMerchant"}, allEntries = true)
   public void delete(Long id) {
 
     Item item = findById(id);

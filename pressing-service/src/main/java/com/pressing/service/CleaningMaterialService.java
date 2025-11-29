@@ -1,7 +1,10 @@
 package com.pressing.service;
 
 import com.pressing.model.CleaningMaterial;
+import com.pressing.model.Merchant;
 import java.util.Collection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /** Service that provides CRUD operations for cleaning materials */
 public interface CleaningMaterialService {
@@ -11,7 +14,9 @@ public interface CleaningMaterialService {
    *
    * @return Collection of cleaning materials
    */
-  public Collection<CleaningMaterial> findAll();
+  public Page<CleaningMaterial> findAll(Pageable pageable);
+
+  public Page<CleaningMaterial> findByMerchant(Merchant merchant, Pageable pageable);
 
   /**
    * Find a cleaning material by Id.

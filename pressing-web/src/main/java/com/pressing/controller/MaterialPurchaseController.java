@@ -7,10 +7,10 @@ import com.pressing.service.UserService;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -47,8 +47,9 @@ public class MaterialPurchaseController {
    * @throws ParseException
    */
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Collection<MaterialPurchase>> getExpenditures(
-      @RequestParam(value = "purchaseDate", required = false) String purchaseDate)
+  public ResponseEntity<Page<MaterialPurchase>> getExpenditures(
+      @RequestParam(value = "purchaseDate", required = false) String purchaseDate,
+      Pageable pageable)
       throws ParseException {
 
     Counter counter = userService.getCurrentUser().getCounter();
@@ -56,22 +57,13 @@ public class MaterialPurchaseController {
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
-    Collection<MaterialPurchase> materialPurchases = new ArrayList<>();
+    Page<MaterialPurchase> materialPurchases;
     if (purchaseDate != null) {
       DateFormat formatter = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
       Date date = formatter.parse(purchaseDate);
-      Collection<MaterialPurchase> filteredMaterialPurchases =
-          materialPurchaseService.findByPurchasDate(date).stream()
-              .filter(mp -> mp.getCounter().equals(counter))
-              .collect(Collectors.toList());
-      materialPurchases.addAll(filteredMaterialPurchases);
-
+      materialPurchases = materialPurchaseService.findByPurchasedDateAndCounter(date, counter, pageable);
     } else {
-      Collection<MaterialPurchase> allMaterialPurchases = materialPurchaseService.findAll();
-      materialPurchases.addAll(
-          allMaterialPurchases.stream()
-              .filter(mp -> mp.getCounter().equals(counter))
-              .collect(Collectors.toList()));
+      materialPurchases = materialPurchaseService.findByCounter(counter, pageable);
     }
 
     return new ResponseEntity<>(materialPurchases, HttpStatus.OK);

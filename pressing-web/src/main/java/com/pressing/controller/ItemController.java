@@ -7,6 +7,9 @@ import com.pressing.service.UserService;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -42,29 +45,26 @@ public class ItemController {
    * @return Collection of items or item with the given name
    */
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Collection<Item>> getItems(
-      @RequestParam(value = "itemName", required = false) String itemName) {
+  public ResponseEntity<Page<Item>> getItems(
+      @RequestParam(value = "itemName", required = false) String itemName, Pageable pageable) {
 
     Merchant merchant = userService.getCurrentUser().getMerchant();
     if (merchant == null) {
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
-    Collection<Item> items = new ArrayList<>();
     if (itemName != null) {
+      Collection<Item> items = new ArrayList<>();
       Item item = itemService.findByName(itemName);
       if (item != null && item.getMerchant().equals(merchant)) {
         items.add(item);
       }
+      Page<Item> singleResult = new PageImpl<>(new ArrayList<>(items));
+      return new ResponseEntity<>(singleResult, HttpStatus.OK);
     } else {
-      Collection<Item> allItems = itemService.findAll();
-      items.addAll(
-          allItems.stream()
-              .filter(item -> item.getMerchant().equals(merchant))
-              .collect(Collectors.toList()));
+      Page<Item> items = itemService.findByMerchant(merchant, pageable);
+      return new ResponseEntity<>(items, HttpStatus.OK);
     }
-
-    return new ResponseEntity<>(items, HttpStatus.OK);
   }
 
   /**

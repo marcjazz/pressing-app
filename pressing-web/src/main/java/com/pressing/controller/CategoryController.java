@@ -6,6 +6,9 @@ import com.pressing.service.CategoryService;
 import com.pressing.service.ItemService;
 import java.util.ArrayList;
 import java.util.Collection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -44,20 +47,25 @@ public class CategoryController {
    * @return collection of categories or category with the given name
    */
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Collection<Category>> getCategories(
-      @RequestParam(value = "categoryName", required = false) String categoryName) {
+  public ResponseEntity<Page<Category>> getCategories(
+      @RequestParam(value = "categoryName", required = false) String categoryName, Pageable pageable) {
 
-    Collection<Category> categories = new ArrayList<>();
     if (categoryName != null) {
+      // This part is not paginated, as it returns a single or no category.
+      // For a more consistent API, you might consider returning a Page with a single element.
+      Collection<Category> categories = new ArrayList<>();
       Category category = categoryService.findByName(categoryName);
-      categories.add(category);
-
+      if (category != null) {
+        categories.add(category);
+      }
+      // Returning a Page for a single item search might be complex, so we can return a list for this specific case.
+      // Or, for consistency, create a Page object from the list.
+      Page<Category> singleResult = new PageImpl<>(new ArrayList<>(categories));
+      return new ResponseEntity<>(singleResult, HttpStatus.OK);
     } else {
-      Collection<Category> allCategories = categoryService.findAll();
-      categories.addAll(allCategories);
+      Page<Category> allCategories = categoryService.findAll(pageable);
+      return new ResponseEntity<>(allCategories, HttpStatus.OK);
     }
-
-    return new ResponseEntity<>(categories, HttpStatus.OK);
   }
 
   /**

@@ -3,6 +3,8 @@ package com.pressing.service;
 import com.pressing.model.Agency;
 import com.pressing.model.Merchant;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface AgencyService {
 
@@ -10,7 +12,7 @@ public interface AgencyService {
 
   Agency findById(Long id);
 
-  List<Agency> findAll();
+  Page<Agency> findAll(Pageable pageable);
 
   void delete(Long id);
 

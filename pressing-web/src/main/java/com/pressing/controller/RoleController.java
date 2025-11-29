@@ -7,7 +7,11 @@ import com.pressing.service.PermissionService;
 import com.pressing.service.RoleService;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -44,17 +48,20 @@ public class RoleController {
    * @return Collection of roles in the system or role with the given name
    */
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Collection<Role>> getRoles(
-      @RequestParam(value = "roleName", required = false) String roleName) {
+  public ResponseEntity<Page<Role>> getRoles(
+      @RequestParam(value = "roleName", required = false) String roleName,
+      Pageable pageable) {
 
-    Collection<Role> roles = new ArrayList<>();
+    Page<Role> roles;
     if (roleName != null) {
       Role role = roleService.findByName(roleName);
-      roles.add(role);
-
+      if (role != null) {
+        roles = new PageImpl<>(Collections.singletonList(role));
+      } else {
+        roles = Page.empty();
+      }
     } else {
-      Collection<Role> allRole = roleService.findAll();
-      roles.addAll(allRole);
+      roles = roleService.findAll(pageable);
     }
 
     return new ResponseEntity<>(roles, HttpStatus.OK);

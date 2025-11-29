@@ -1,7 +1,10 @@
 package com.pressing.service;
 
+import com.pressing.model.Counter;
 import com.pressing.model.Customer;
 import java.util.Collection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /** Service that provides CRUD operations for customers */
 public interface CustomerService {
@@ -11,7 +14,7 @@ public interface CustomerService {
    *
    * @return Collection of all customers
    */
-  public Collection<Customer> findAll();
+  public Page<Customer> findAll(Pageable pageable);
 
   /**
    * Find a customer by Id.
@@ -36,6 +39,10 @@ public interface CustomerService {
    * @return Collection of customers
    */
   public Collection<Customer> findByIsActive(boolean isActive);
+
+  public Page<Customer> findByCounter(Counter counter, Pageable pageable);
+
+  public Page<Customer> findByIsActiveAndCounter(boolean isActive, Counter counter, Pageable pageable);
 
   /**
    * Create a new customer account.

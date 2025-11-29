@@ -2,6 +2,8 @@ package com.pressing.service;
 
 import com.pressing.model.Role;
 import java.util.Collection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /** Service that provides CRUD operations for role */
 public interface RoleService {
@@ -11,7 +13,7 @@ public interface RoleService {
    *
    * @return cCollection of roles
    */
-  public Collection<Role> findAll();
+  public Page<Role> findAll(Pageable pageable);
 
   /**
    * Find a role by Id.

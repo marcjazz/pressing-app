@@ -4,6 +4,10 @@ import com.pressing.model.Transaction;
 import com.pressing.repository.TransactionRepository;
 import com.pressing.service.TransactionService;
 import java.util.Collection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -16,13 +20,13 @@ public class TransactionServiceImpl implements TransactionService {
   @Autowired private TransactionRepository transactionRepository;
 
   @Override
-  public Collection<Transaction> findAll() {
-
-    Collection<Transaction> transactions = transactionRepository.findAll();
-    return transactions;
+  @Cacheable("transactions")
+  public Page<Transaction> findAll(Pageable pageable) {
+    return transactionRepository.findAll(pageable);
   }
 
   @Override
+  @Cacheable(value = "transaction", key = "#transactionId")
   public Transaction findById(Long transactionId) {
     if (transactionId == null) {
       return null;
@@ -33,20 +37,19 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public Collection<Transaction> findByCustomerId(Long customerId) {
-
-    Collection<Transaction> transaction = transactionRepository.findByCustomerId(customerId);
-    return transaction;
+  @Cacheable(value = "transactionsByCustomer", key = "#customerId")
+  public Page<Transaction> findByCustomerId(Long customerId, Pageable pageable) {
+    return transactionRepository.findByCustomerId(customerId, pageable);
   }
 
   @Override
-  public Collection<Transaction> findByItemId(Long itemId) {
-
-    Collection<Transaction> transaction = transactionRepository.findByItemId(itemId);
-    return transaction;
+  @Cacheable(value = "transactionsByItem", key = "#itemId")
+  public Page<Transaction> findByItemId(Long itemId, Pageable pageable) {
+    return transactionRepository.findByItemId(itemId, pageable);
   }
 
   @Override
+  @CacheEvict(value = {"transactions", "transaction", "transactionsByCustomer", "transactionsByItem", "transactionsByDate", "transactionsByDueDate", "transactionsPastDueDate", "transactionsByStatus"}, allEntries = true)
   public Transaction create(Transaction transaction) {
     if (transaction == null) {
       return null;
@@ -57,6 +60,7 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
+  @CacheEvict(value = {"transactions", "transaction", "transactionsByCustomer", "transactionsByItem", "transactionsByDate", "transactionsByDueDate", "transactionsPastDueDate", "transactionsByStatus"}, allEntries = true)
   public Transaction update(Transaction transaction) {
     if (transaction == null || transaction.getId() == null) {
       return null;
@@ -67,30 +71,26 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public Collection<Transaction> findByDepositeDate(Date depositDate) {
-
-    Collection<Transaction> transaction = transactionRepository.findByDepositDate(depositDate);
-    return transaction;
+  @Cacheable(value = "transactionsByDate", key = "#depositDate.toString()")
+  public Page<Transaction> findByDepositeDate(Date depositDate, Pageable pageable) {
+    return transactionRepository.findByDepositDate(depositDate, pageable);
   }
 
   @Override
-  public Collection<Transaction> findByDueDate(Date dueDate) {
-
-    Collection<Transaction> transaction = transactionRepository.findByDueDate(dueDate);
-    return transaction;
+  @Cacheable(value = "transactionsByDueDate", key = "#dueDate.toString()")
+  public Page<Transaction> findByDueDate(Date dueDate, Pageable pageable) {
+    return transactionRepository.findByDueDate(dueDate, pageable);
   }
 
   @Override
-  public Collection<Transaction> transactionsPastDueDate(Date dueDate) {
-
-    Collection<Transaction> transactions =
-        transactionRepository.findByDueDateBeforeAndStatusNot(dueDate, "COLLECTED");
-    return transactions;
+  @Cacheable(value = "transactionsPastDueDate", key = "#dueDate.toString()")
+  public Page<Transaction> transactionsPastDueDate(Date dueDate, Pageable pageable) {
+    return transactionRepository.findByDueDateBeforeAndStatusNot(dueDate, "COLLECTED", pageable);
   }
 
   @Override
-  public Collection<Transaction> findByStatus(Collection<String> status) {
-    Collection<Transaction> transactions = transactionRepository.findByStatusIn(status);
-    return transactions;
+  @Cacheable(value = "transactionsByStatus", key = "#status.toString()")
+  public Page<Transaction> findByStatus(Collection<String> status, Pageable pageable) {
+    return transactionRepository.findByStatusIn(status, pageable);
   }
 }

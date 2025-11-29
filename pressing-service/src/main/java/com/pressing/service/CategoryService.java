@@ -1,7 +1,9 @@
 package com.pressing.service;
 
 import com.pressing.model.Category;
-import java.util.Collection;
+import com.pressing.model.Category;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /** Service that provides CRUD operations for categories */
 public interface CategoryService {
@@ -11,7 +13,7 @@ public interface CategoryService {
    *
    * @return Collection of categories
    */
-  public Collection<Category> findAll();
+  public Page<Category> findAll(Pageable pageable);
 
   /**
    * Find a category by Id.

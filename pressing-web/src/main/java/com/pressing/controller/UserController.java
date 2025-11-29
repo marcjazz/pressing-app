@@ -10,7 +10,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -48,46 +52,40 @@ public class UserController {
    * @return Collection of users or user with the given username
    */
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Collection<CustomUser>> getUsers(
+  public ResponseEntity<Page<CustomUser>> getUsers(
       @RequestParam(value = "username", required = false) String username,
-      @RequestParam(value = "active", required = false) String isActive) {
+      @RequestParam(value = "active", required = false) String isActive,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size,
+      @RequestParam(defaultValue = "id") String sort) {
 
     Merchant merchant = userService.getCurrentUser().getMerchant();
     if (merchant == null) {
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
-    Collection<CustomUser> users = new ArrayList<>();
+    Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
+
     if (username != null) {
+      // Username search is unique, so we can just return a page with one item or empty
       CustomUser user = userService.findByUserName(username);
       if (user != null && user.getMerchant().equals(merchant)) {
-        users.add(user);
+        // Create a PageImpl manually if needed, but for now let's stick to the pattern
+        // Since findByUserName returns a single object, we might need to adjust logic or return type if we want strict pagination on this specific query
+        // However, usually username search is exact match. Let's wrap it.
+        // For simplicity in this refactor, if username is present, we return a list wrapped in a page implementation or similar.
+        // But wait, the return type is Page<CustomUser>. 
+        // Let's use a helper or just return a PageImpl.
+        // Since PageImpl is in spring-data-commons, we can use it.
+        return new ResponseEntity<>(new org.springframework.data.domain.PageImpl<>(Collections.singletonList(user)), HttpStatus.OK);
       }
+      return new ResponseEntity<>(org.springframework.data.domain.Page.empty(), HttpStatus.OK);
     } else if (isActive != null) {
-      if (isActive.compareToIgnoreCase("true") == 0) {
-        Collection<CustomUser> activeUsers = userService.findByIsActive(true);
-        users.addAll(
-            activeUsers.stream()
-                .filter(user -> user.getMerchant().equals(merchant))
-                .collect(Collectors.toList()));
-
-      } else if (isActive.compareToIgnoreCase("false") == 0) {
-        Collection<CustomUser> deActivatedUsers = userService.findByIsActive(false);
-        users.addAll(
-            deActivatedUsers.stream()
-                .filter(user -> user.getMerchant().equals(merchant))
-                .collect(Collectors.toList()));
-      }
-
+      boolean active = Boolean.parseBoolean(isActive);
+      return new ResponseEntity<>(userService.findByMerchantAndIsActive(merchant, active, pageable), HttpStatus.OK);
     } else {
-      Collection<CustomUser> allUser = userService.findAll();
-      users.addAll(
-          allUser.stream()
-              .filter(user -> user.getMerchant().equals(merchant))
-              .collect(Collectors.toList()));
+      return new ResponseEntity<>(userService.findByMerchant(merchant, pageable), HttpStatus.OK);
     }
-
-    return new ResponseEntity<>(users, HttpStatus.OK);
   }
 
   /**

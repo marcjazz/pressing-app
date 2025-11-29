@@ -4,6 +4,10 @@ import com.pressing.model.Agency;
 import com.pressing.repository.AgencyRepository;
 import com.pressing.service.AgencyService;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,21 +24,25 @@ public class AgencyServiceImpl implements AgencyService {
   }
 
   @Override
+  @CacheEvict(value = {"agencies", "agency"}, allEntries = true)
   public Agency save(Agency agency) {
     return agencyRepository.save(agency);
   }
 
   @Override
+  @Cacheable(value = "agency", key = "#id")
   public Agency findById(Long id) {
     return agencyRepository.findById(id).orElse(null);
   }
 
   @Override
-  public List<Agency> findAll() {
-    return agencyRepository.findAll();
+  @Cacheable("agencies")
+  public Page<Agency> findAll(Pageable pageable) {
+    return agencyRepository.findAll(pageable);
   }
 
   @Override
+  @CacheEvict(value = {"agencies", "agency"}, allEntries = true)
   public void delete(Long id) {
     agencyRepository.deleteById(id);
   }

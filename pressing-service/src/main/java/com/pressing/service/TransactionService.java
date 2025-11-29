@@ -2,6 +2,8 @@ package com.pressing.service;
 
 import com.pressing.model.Transaction;
 import java.util.Collection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.Date;
 
 /** Service that provides CRUD operations for transactions */
@@ -12,7 +14,7 @@ public interface TransactionService {
    *
    * @return Collection of all transactions in the system
    */
-  public Collection<Transaction> findAll();
+  public Page<Transaction> findAll(Pageable pageable);
 
   /**
    * Find a transaction by id.
@@ -28,7 +30,7 @@ public interface TransactionService {
    * @param id
    * @return Collection of Transaction objects
    */
-  public Collection<Transaction> findByCustomerId(Long customerId);
+  public Page<Transaction> findByCustomerId(Long customerId, Pageable pageable);
 
   /**
    * Find transactions with item id, itemId.
@@ -36,7 +38,7 @@ public interface TransactionService {
    * @param id
    * @return Collection of Transaction objects
    */
-  public Collection<Transaction> findByItemId(Long itemId);
+  public Page<Transaction> findByItemId(Long itemId, Pageable pageable);
 
   /**
    * Find transactions with status.
@@ -44,7 +46,7 @@ public interface TransactionService {
    * @param status
    * @return Collection of Transaction objects
    */
-  public Collection<Transaction> findByStatus(Collection<String> status);
+  public Page<Transaction> findByStatus(Collection<String> status, Pageable pageable);
 
   /**
    * Find transactions with deposit date, deposit date.
@@ -52,7 +54,7 @@ public interface TransactionService {
    * @param depositDate
    * @return Collection of Transaction objects
    */
-  public Collection<Transaction> findByDepositeDate(Date depositDate);
+  public Page<Transaction> findByDepositeDate(Date depositDate, Pageable pageable);
 
   /**
    * Find transactions with due date, dueDate.
@@ -60,7 +62,7 @@ public interface TransactionService {
    * @param dueDate
    * @return Collection of Transaction objects
    */
-  public Collection<Transaction> findByDueDate(Date dueDate);
+  public Page<Transaction> findByDueDate(Date dueDate, Pageable pageable);
 
   /**
    * Find transactions with due date less then dueDate.
@@ -68,7 +70,7 @@ public interface TransactionService {
    * @param dueDate
    * @return Collection of Transaction objects
    */
-  public Collection<Transaction> transactionsPastDueDate(Date dueDate);
+  public Page<Transaction> transactionsPastDueDate(Date dueDate, Pageable pageable);
 
   /**
    * Create a new transaction.

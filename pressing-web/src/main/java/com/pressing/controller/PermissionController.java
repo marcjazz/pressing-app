@@ -4,6 +4,10 @@ import com.pressing.model.Permission;
 import com.pressing.service.PermissionService;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -38,17 +42,20 @@ public class PermissionController {
    * @return Collection of permissions or permission with the given name
    */
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Collection<Permission>> getPermissions(
-      @RequestParam(value = "permissionName", required = false) String permissionName) {
+  public ResponseEntity<Page<Permission>> getPermissions(
+      @RequestParam(value = "permissionName", required = false) String permissionName,
+      Pageable pageable) {
 
-    Collection<Permission> permissions = new ArrayList<>();
+    Page<Permission> permissions;
     if (permissionName != null) {
       Permission permission = permissionService.findByName(permissionName);
-      permissions.add(permission);
-
+      if (permission != null) {
+        permissions = new PageImpl<>(Collections.singletonList(permission));
+      } else {
+        permissions = Page.empty();
+      }
     } else {
-      Collection<Permission> allPermission = permissionService.findAll();
-      permissions.addAll(allPermission);
+      permissions = permissionService.findAll(pageable);
     }
 
     return new ResponseEntity<>(permissions, HttpStatus.OK);

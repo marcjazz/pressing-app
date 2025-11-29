@@ -2,6 +2,8 @@ package com.pressing.service;
 
 import com.pressing.model.Permission;
 import java.util.Collection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /** Service that provides CRUD operations for permission */
 public interface PermissionService {
@@ -11,7 +13,7 @@ public interface PermissionService {
    *
    * @return Collection of all permissions in the system
    */
-  public Collection<Permission> findAll();
+  public Page<Permission> findAll(Pageable pageable);
 
   /**
    * Find a permission by Id.

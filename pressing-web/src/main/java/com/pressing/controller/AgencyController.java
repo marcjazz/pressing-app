@@ -3,6 +3,8 @@ package com.pressing.controller;
 import com.pressing.model.Agency;
 import com.pressing.service.AgencyService;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,8 +51,8 @@ public class AgencyController {
   }
 
   @GetMapping
-  public ResponseEntity<List<Agency>> findAll() {
-    return new ResponseEntity<>(agencyService.findAll(), HttpStatus.OK);
+  public ResponseEntity<Page<Agency>> findAll(Pageable pageable) {
+    return new ResponseEntity<>(agencyService.findAll(pageable), HttpStatus.OK);
   }
 
   @DeleteMapping("/{id}")

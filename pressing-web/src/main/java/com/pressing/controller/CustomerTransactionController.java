@@ -12,6 +12,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,61 +60,56 @@ public class CustomerTransactionController {
    * @throws ParseException
    */
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Collection<Transaction>> getTransactions(
+  public ResponseEntity<Page<Transaction>> getTransactions(
       @RequestParam(value = "depositDate", required = false) String depositDate,
       @RequestParam(value = "dueDate", required = false) String dueDate,
       @RequestParam(value = "customerId", required = false) Long customerId,
       @RequestParam(value = "itemId", required = false) Long itemId,
       @RequestParam(value = "greatestDueDate", required = false) String greatestDueDate,
-      @RequestParam(value = "status", required = false) String status)
+      @RequestParam(value = "status", required = false) String status,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size,
+      @RequestParam(defaultValue = "id") String sort)
       throws ParseException {
 
-    Collection<Transaction> transactions = new ArrayList<>();
+    Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
+
+    Page<Transaction> transactions;
     if (depositDate != null) {
       DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
       Date date = formatter.parse(depositDate);
-      Collection<Transaction> transaction = transactionService.findByDepositeDate(date);
-      transactions.addAll(transaction);
+      transactions = transactionService.findByDepositeDate(date, pageable);
 
     } else if (dueDate != null) {
       DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
       Date date = formatter.parse(dueDate);
-      Collection<Transaction> transaction = transactionService.findByDueDate(date);
-      transactions.addAll(transaction);
+      transactions = transactionService.findByDueDate(date, pageable);
 
     } else if (greatestDueDate != null) {
       DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
       Date date = formatter.parse(greatestDueDate);
-      Collection<Transaction> transaction = transactionService.transactionsPastDueDate(date);
-      transactions.addAll(transaction);
+      transactions = transactionService.transactionsPastDueDate(date, pageable);
 
     } else if (customerId != null) {
-      Collection<Transaction> transaction = transactionService.findByCustomerId(customerId);
-      transactions.addAll(transaction);
+      transactions = transactionService.findByCustomerId(customerId, pageable);
 
     } else if (itemId != null) {
-      Collection<Transaction> transaction = transactionService.findByItemId(itemId);
-      transactions.addAll(transaction);
+      transactions = transactionService.findByItemId(itemId, pageable);
 
     } else if (status != null) {
+      List<String> statusList = new ArrayList<>();
       if (status.equalsIgnoreCase("clean")) {
-        List<String> statusList = new ArrayList<>();
         statusList.add("READY_AND_NOT_PAID");
         statusList.add("READY_AND_PAID");
         statusList.add("COLLECTED");
-        Collection<Transaction> transaction = transactionService.findByStatus(statusList);
-        transactions.addAll(transaction);
       } else if (status.equalsIgnoreCase("dirty")) {
-        List<String> statusList = new ArrayList<>();
         statusList.add("PENDING");
         statusList.add("WASHING");
-        Collection<Transaction> transaction = transactionService.findByStatus(statusList);
-        transactions.addAll(transaction);
       }
+      transactions = transactionService.findByStatus(statusList, pageable);
 
     } else {
-      Collection<Transaction> allTransactions = transactionService.findAll();
-      transactions.addAll(allTransactions);
+      transactions = transactionService.findAll(pageable);
     }
 
     return new ResponseEntity<>(transactions, HttpStatus.OK);

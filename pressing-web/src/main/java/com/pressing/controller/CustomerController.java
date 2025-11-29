@@ -7,6 +7,9 @@ import com.pressing.service.UserService;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -42,45 +45,36 @@ public class CustomerController {
    * @return Collection of customers or customer with the particular email
    */
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Collection<Customer>> getCustomers(
+  public ResponseEntity<Page<Customer>> getCustomers(
       @RequestParam(value = "customerEmail", required = false) String customerEmail,
-      @RequestParam(value = "active", required = false) String isActive) {
+      @RequestParam(value = "active", required = false) String isActive, Pageable pageable) {
 
     Counter counter = userService.getCurrentUser().getCounter();
     if (counter == null) {
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
-    Collection<Customer> customers = new ArrayList<>();
     if (customerEmail != null) {
+      Collection<Customer> customers = new ArrayList<>();
       Customer customer = customerService.findByEmail(customerEmail);
       if (customer != null && customer.getCounter().equals(counter)) {
         customers.add(customer);
       }
+      Page<Customer> singleResult = new PageImpl<>(new ArrayList<>(customers));
+      return new ResponseEntity<>(singleResult, HttpStatus.OK);
     } else if (isActive != null) {
       if (isActive.compareToIgnoreCase("true") == 0) {
-        Collection<Customer> activeCustomers = customerService.findByIsActive(true);
-        customers.addAll(
-            activeCustomers.stream()
-                .filter(customer -> customer.getCounter().equals(counter))
-                .collect(Collectors.toList()));
-
+        Page<Customer> activeCustomers = customerService.findByIsActiveAndCounter(true, counter, pageable);
+        return new ResponseEntity<>(activeCustomers, HttpStatus.OK);
       } else if (isActive.compareToIgnoreCase("false") == 0) {
-        Collection<Customer> deactivatedCustomers = customerService.findByIsActive(false);
-        customers.addAll(
-            deactivatedCustomers.stream()
-                .filter(customer -> customer.getCounter().equals(counter))
-                .collect(Collectors.toList()));
+        Page<Customer> deactivatedCustomers = customerService.findByIsActiveAndCounter(false, counter, pageable);
+        return new ResponseEntity<>(deactivatedCustomers, HttpStatus.OK);
       }
     } else {
-      Collection<Customer> allCustomers = customerService.findAll();
-      customers.addAll(
-          allCustomers.stream()
-              .filter(customer -> customer.getCounter().equals(counter))
-              .collect(Collectors.toList()));
+      Page<Customer> allCustomers = customerService.findByCounter(counter, pageable);
+      return new ResponseEntity<>(allCustomers, HttpStatus.OK);
     }
-
-    return new ResponseEntity<>(customers, HttpStatus.OK);
+    return new ResponseEntity<>(Page.empty(), HttpStatus.OK);
   }
 
   /**

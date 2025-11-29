@@ -3,6 +3,8 @@ package com.pressing.controller;
 import com.pressing.model.Counter;
 import com.pressing.service.CounterService;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,8 +50,8 @@ public class CounterController {
   }
 
   @GetMapping
-  public ResponseEntity<List<Counter>> findAll() {
-    return new ResponseEntity<>(counterService.findAll(), HttpStatus.OK);
+  public ResponseEntity<Page<Counter>> findAll(Pageable pageable) {
+    return new ResponseEntity<>(counterService.findAll(pageable), HttpStatus.OK);
   }
 
   @DeleteMapping("/{id}")

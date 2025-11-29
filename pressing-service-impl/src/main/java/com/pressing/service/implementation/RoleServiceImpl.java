@@ -4,6 +4,10 @@ import com.pressing.model.Role;
 import com.pressing.repository.RoleRepository;
 import com.pressing.service.RoleService;
 import java.util.Collection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
@@ -15,13 +19,13 @@ public class RoleServiceImpl implements RoleService {
   @Autowired private RoleRepository roleRepository;
 
   @Override
-  public Collection<Role> findAll() {
-
-    Collection<Role> roles = roleRepository.findAll();
-    return roles;
+  @Cacheable("roles")
+  public Page<Role> findAll(Pageable pageable) {
+    return roleRepository.findAll(pageable);
   }
 
   @Override
+  @Cacheable(value = "role", key = "#id")
   public Role findById(Long id) {
     if (id == null) {
       return null;
@@ -39,6 +43,7 @@ public class RoleServiceImpl implements RoleService {
   }
 
   @Override
+  @CacheEvict(value = {"roles", "role"}, allEntries = true)
   public Role create(Role role) {
     if (role == null) {
       return null;
@@ -49,6 +54,7 @@ public class RoleServiceImpl implements RoleService {
   }
 
   @Override
+  @CacheEvict(value = {"roles", "role"}, allEntries = true)
   public Role update(Role role) {
     if (role == null || role.getId() == null) {
       return null;

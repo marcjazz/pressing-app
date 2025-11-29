@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @EnableWebMvc
@@ -27,6 +28,13 @@ public class Application {
             .addMapping("/**")
             .allowedOrigins("*")
             .allowedMethods("POST", "GET", "PUT", "DELETE", "OPTIONS");
+      }
+
+      @Override
+      public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
+        registry
+            .addResourceHandler("/swagger-ui/**")
+            .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/");
       }
     };
   }

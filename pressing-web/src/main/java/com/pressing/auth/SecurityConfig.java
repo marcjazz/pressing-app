@@ -19,7 +19,9 @@ public class SecurityConfig {
     http.csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers("/api/v1/plans/**")
+                auth.requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**")
+                    .permitAll()
+                    .requestMatchers("/api/v1/plans/**")
                     .hasAuthority("SCOPE_ADMIN")
                     .requestMatchers("/api/v1/merchants/**")
                     .hasAuthority("SCOPE_ADMIN")

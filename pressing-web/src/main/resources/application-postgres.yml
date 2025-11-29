@@ -22,3 +22,10 @@ flyway:
   user: postgres
   password: postgres
   locations: classpath:db/migration
+
+springdoc:
+  swagger-ui:
+    oauth:
+      client-id: pressing-api
+      use-pkce-with-authorization-code-grant: true
+    oauth2-redirect-url: http://localhost:8082/swagger-ui/oauth2-redirect.html

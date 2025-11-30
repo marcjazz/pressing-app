@@ -1,5 +1,6 @@
 package com.pressing.controller;
 
+import com.pressing.mapper.EntityMapper;
 import com.pressing.model.CustomUser;
 import com.pressing.model.Merchant;
 import com.pressing.model.Role;
@@ -8,14 +9,16 @@ import com.pressing.service.RoleService;
 import com.pressing.service.UserService;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Collections;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +48,8 @@ public class UserController {
 
   @Autowired private RoleService roleService;
 
+  @Autowired private EntityMapper entityMapper;
+
   /**
    * Get all uses or user with a given username.
    *
@@ -52,7 +57,7 @@ public class UserController {
    * @return Collection of users or user with the given username
    */
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Page<CustomUser>> getUsers(
+  public ResponseEntity<Page<UserDTO>> getUsers(
       @RequestParam(value = "username", required = false) String username,
       @RequestParam(value = "active", required = false) String isActive,
       @RequestParam(defaultValue = "0") int page,
@@ -65,27 +70,27 @@ public class UserController {
     }
 
     Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
+    Page<CustomUser> users;
 
     if (username != null) {
-      // Username search is unique, so we can just return a page with one item or empty
       CustomUser user = userService.findByUserName(username);
       if (user != null && user.getMerchant().equals(merchant)) {
-        // Create a PageImpl manually if needed, but for now let's stick to the pattern
-        // Since findByUserName returns a single object, we might need to adjust logic or return type if we want strict pagination on this specific query
-        // However, usually username search is exact match. Let's wrap it.
-        // For simplicity in this refactor, if username is present, we return a list wrapped in a page implementation or similar.
-        // But wait, the return type is Page<CustomUser>. 
-        // Let's use a helper or just return a PageImpl.
-        // Since PageImpl is in spring-data-commons, we can use it.
-        return new ResponseEntity<>(new org.springframework.data.domain.PageImpl<>(Collections.singletonList(user)), HttpStatus.OK);
+        users = new PageImpl<>(Collections.singletonList(user));
+      } else {
+        users = Page.empty();
       }
-      return new ResponseEntity<>(org.springframework.data.domain.Page.empty(), HttpStatus.OK);
     } else if (isActive != null) {
       boolean active = Boolean.parseBoolean(isActive);
-      return new ResponseEntity<>(userService.findByMerchantAndIsActive(merchant, active, pageable), HttpStatus.OK);
+      users = userService.findByMerchantAndIsActive(merchant, active, pageable);
     } else {
-      return new ResponseEntity<>(userService.findByMerchant(merchant, pageable), HttpStatus.OK);
+      users = userService.findByMerchant(merchant, pageable);
     }
+
+    List<UserDTO> dtos =
+        users.getContent().stream().map(entityMapper::toDTO).collect(Collectors.toList());
+    Page<UserDTO> result = new PageImpl<>(dtos, pageable, users.getTotalElements());
+
+    return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
   /**
@@ -98,7 +103,7 @@ public class UserController {
       value = "/{id}",
       method = RequestMethod.GET,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<CustomUser> getUserById(@NonNull @PathVariable("id") Long userId) {
+  public ResponseEntity<UserDTO> getUserById(@NonNull @PathVariable("id") Long userId) {
 
     Merchant merchant = userService.getCurrentUser().getMerchant();
     if (merchant == null) {
@@ -110,33 +115,33 @@ public class UserController {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    return new ResponseEntity<>(user, HttpStatus.OK);
+    return new ResponseEntity<>(entityMapper.toDTO(user), HttpStatus.OK);
   }
 
   /**
    * Create new user.
    *
-   * @param user
+   * @param userDTO
    * @return User object (created user object)
    */
   @RequestMapping(
       method = RequestMethod.POST,
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<CustomUser> createUser(@RequestBody UserDTO user) {
+  public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
     int count = 0;
     List<Role> roles = new ArrayList<>();
-    while (user.getRoleIds().size() > count) {
-      roles.add(roleService.findById(user.getRoleIds().get(count++)));
+    while (userDTO.getRoleIds().size() > count) {
+      roles.add(roleService.findById(userDTO.getRoleIds().get(count++)));
     }
     CustomUser newUser = new CustomUser();
-    newUser.setFirstName(user.getFirstName());
-    newUser.setLastName(user.getLastName());
-    newUser.setUsername(user.getUsername());
-    newUser.setPassword(user.getPassword());
-    newUser.setActive(user.isActive());
+    newUser.setFirstName(userDTO.getFirstName());
+    newUser.setLastName(userDTO.getLastName());
+    newUser.setUsername(userDTO.getUsername());
+    newUser.setPassword(userDTO.getPassword());
+    newUser.setActive(userDTO.isActive());
     newUser.setRoles(roles);
-    newUser.setTelephone(user.getTelephone());
+    newUser.setTelephone(userDTO.getTelephone());
 
     Merchant merchant = userService.getCurrentUser().getMerchant();
     if (merchant != null) {
@@ -149,7 +154,7 @@ public class UserController {
     }
     newUser = createdUser.get();
 
-    return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+    return new ResponseEntity<>(entityMapper.toDTO(newUser), HttpStatus.CREATED);
   }
 
   /**
@@ -163,12 +168,12 @@ public class UserController {
       method = RequestMethod.PUT,
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<CustomUser> updateUser(
-      @NonNull @PathVariable("userId") Long userId, @RequestBody UserDTO user) {
+  public ResponseEntity<UserDTO> updateUser(
+      @NonNull @PathVariable("userId") Long userId, @RequestBody UserDTO userDTO) {
     int count = 0;
     List<Role> roles = new ArrayList<>();
-    while (user.getRoleIds().size() > count) {
-      roles.add(roleService.findById(user.getRoleIds().get(count++)));
+    while (userDTO.getRoleIds().size() > count) {
+      roles.add(roleService.findById(userDTO.getRoleIds().get(count++)));
     }
 
     Merchant merchant = userService.getCurrentUser().getMerchant();
@@ -181,18 +186,18 @@ public class UserController {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    updateUser.setFirstName(user.getFirstName());
-    updateUser.setLastName(user.getLastName());
-    updateUser.setPassword(user.getPassword());
-    updateUser.setTelephone(user.getTelephone());
-    updateUser.setActive(user.isActive());
+    updateUser.setFirstName(userDTO.getFirstName());
+    updateUser.setLastName(userDTO.getLastName());
+    updateUser.setPassword(userDTO.getPassword());
+    updateUser.setTelephone(userDTO.getTelephone());
+    updateUser.setActive(userDTO.isActive());
     updateUser.setRoles(roles);
     updateUser = userService.update(updateUser);
 
     if (updateUser == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
-    return new ResponseEntity<>(updateUser, HttpStatus.OK);
+    return new ResponseEntity<>(entityMapper.toDTO(updateUser), HttpStatus.OK);
   }
 
   /**

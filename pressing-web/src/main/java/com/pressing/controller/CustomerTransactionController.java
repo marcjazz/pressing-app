@@ -1,9 +1,11 @@
 package com.pressing.controller;
 
+import com.pressing.mapper.EntityMapper;
 import com.pressing.model.CustomerItem;
 import com.pressing.model.Payment;
 import com.pressing.model.PaymentDTO;
 import com.pressing.model.Transaction;
+import com.pressing.model.TransactionDTO;
 import com.pressing.service.PaymentMethodService;
 import com.pressing.service.PaymentService;
 import com.pressing.service.TransactionService;
@@ -12,13 +14,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import java.util.Date;
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +56,8 @@ public class CustomerTransactionController {
 
   @Autowired private com.pressing.service.UserService userService;
 
+  @Autowired private EntityMapper entityMapper;
+
   /**
    * Get all transactions or a customer or item transaction with a given id.
    *
@@ -60,7 +66,7 @@ public class CustomerTransactionController {
    * @throws ParseException
    */
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Page<Transaction>> getTransactions(
+  public ResponseEntity<Page<TransactionDTO>> getTransactions(
       @RequestParam(value = "depositDate", required = false) String depositDate,
       @RequestParam(value = "dueDate", required = false) String dueDate,
       @RequestParam(value = "customerId", required = false) Long customerId,
@@ -112,7 +118,14 @@ public class CustomerTransactionController {
       transactions = transactionService.findAll(pageable);
     }
 
-    return new ResponseEntity<>(transactions, HttpStatus.OK);
+    List<TransactionDTO> transactionDTOs =
+        transactions.getContent().stream()
+            .map(entityMapper::toDTO)
+            .collect(Collectors.toList());
+    Page<TransactionDTO> result =
+        new PageImpl<>(transactionDTOs, pageable, transactions.getTotalElements());
+
+    return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
   /**
@@ -125,7 +138,7 @@ public class CustomerTransactionController {
       value = "/{transactionId}",
       method = RequestMethod.GET,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Transaction> getTransactionById(
+  public ResponseEntity<TransactionDTO> getTransactionById(
       @NonNull @PathVariable("transactionId") Long transactionId) {
 
     Transaction transaction = transactionService.findById(transactionId);
@@ -133,7 +146,7 @@ public class CustomerTransactionController {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    return new ResponseEntity<>(transaction, HttpStatus.OK);
+    return new ResponseEntity<>(entityMapper.toDTO(transaction), HttpStatus.OK);
   }
 
   /**
@@ -160,40 +173,30 @@ public class CustomerTransactionController {
   /**
    * Create new transaction record.
    *
-   * @param customerItem
+   * @param transactionDTO
    * @return Transaction object (created Transaction object)
    */
   @RequestMapping(
       method = RequestMethod.POST,
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Transaction> createTransaction(@RequestBody CustomerItem customerItem) {
+  public ResponseEntity<TransactionDTO> createTransaction(
+      @RequestBody TransactionDTO transactionDTO) {
 
-    Transaction transaction =
-        new Transaction(
-            null, // id
-            customerItem.getCustomer(),
-            customerItem.getItem(),
-            customerItem.getQuantity(),
-            customerItem.getStatus(),
-            customerItem.getLabel(),
-            customerItem.getDepositDate(),
-            customerItem.getDueDate(),
-            userService.getCurrentUser().getCounter(),
-            null // payments
-            );
+    Transaction transaction = entityMapper.toEntity(transactionDTO);
+    transaction.setCounter(userService.getCurrentUser().getCounter());
     transaction = transactionService.create(transaction);
     if (transaction == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    return new ResponseEntity<>(transaction, HttpStatus.CREATED);
+    return new ResponseEntity<>(entityMapper.toDTO(transaction), HttpStatus.CREATED);
   }
 
   /**
    * Update customer item transaction object.
    *
-   * @param customerItem
+   * @param transactionDTO
    * @return Transaction object (updated CustomerItem object).
    */
   @RequestMapping(
@@ -201,17 +204,17 @@ public class CustomerTransactionController {
       method = RequestMethod.PUT,
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Transaction> updateCustomerTransaction(
-      @RequestBody CustomerItem customerItem) {
+  public ResponseEntity<TransactionDTO> updateCustomerTransaction(
+      @RequestBody TransactionDTO transactionDTO) {
 
-    Transaction transaction = transactionService.findById(customerItem.getId());
-    transaction.setQuantity(customerItem.getQuantity());
-    transaction.setStatus(customerItem.getStatus());
+    Transaction transaction = transactionService.findById(transactionDTO.getId());
+    transaction.setQuantity(transactionDTO.getQuantity());
+    transaction.setStatus(transactionDTO.getStatus());
     transaction = transactionService.update(transaction);
     if (transaction == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
-    return new ResponseEntity<>(transaction, HttpStatus.OK);
+    return new ResponseEntity<>(entityMapper.toDTO(transaction), HttpStatus.OK);
   }
 
   /**

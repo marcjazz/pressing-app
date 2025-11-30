@@ -1,20 +1,24 @@
 package com.pressing.controller;
 
+import com.pressing.mapper.EntityMapper;
 import com.pressing.model.Counter;
 import com.pressing.model.Merchant;
 import com.pressing.model.Payment;
+import com.pressing.model.PaymentDTO;
 import com.pressing.model.PaymentMethod;
+import com.pressing.model.PaymentMethodDTO;
 import com.pressing.service.PaymentMethodService;
 import com.pressing.service.PaymentService;
 import com.pressing.service.UserService;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +50,8 @@ public class PaymentMethodController {
 
   @Autowired private UserService userService;
 
+  @Autowired private EntityMapper entityMapper;
+
   /**
    * Get all payment method or payment method with a given name.
    *
@@ -53,7 +59,7 @@ public class PaymentMethodController {
    * @return Collection of payment methods or payment method with the given name
    */
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Page<PaymentMethod>> getPaymentMethods(
+  public ResponseEntity<Page<PaymentMethodDTO>> getPaymentMethods(
       @RequestParam(value = "methodName", required = false) String methodName,
       @RequestParam(value = "active", required = false) String isActive,
       Pageable pageable) {
@@ -78,8 +84,14 @@ public class PaymentMethodController {
       paymentMethods = paymentMethodService.findByMerchant(merchant, pageable);
     }
 
-    return new ResponseEntity<>(paymentMethods, HttpStatus.OK);
-  }
+    List<PaymentMethodDTO> dtos =
+        paymentMethods.getContent().stream()
+            .map(entityMapper::toDTO)
+            .collect(Collectors.toList());
+    Page<PaymentMethodDTO> result =
+        new PageImpl<>(dtos, pageable, paymentMethods.getTotalElements());
+
+    return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
   /**
@@ -92,7 +104,7 @@ public class PaymentMethodController {
       value = "/{methodId}",
       method = RequestMethod.GET,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<PaymentMethod> getPaymentMethodById(
+  public ResponseEntity<PaymentMethodDTO> getPaymentMethodById(
       @PathVariable("methodId") Long methodId) {
 
     Merchant merchant = userService.getCurrentUser().getMerchant();
@@ -105,7 +117,7 @@ public class PaymentMethodController {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    return new ResponseEntity<>(paymentMethod, HttpStatus.OK);
+    return new ResponseEntity<>(entityMapper.toDTO(paymentMethod), HttpStatus.OK);
   }
 
   /**
@@ -118,7 +130,7 @@ public class PaymentMethodController {
       value = "/{methodId}/payments",
       method = RequestMethod.GET,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Collection<Payment>> getPaymentMethodPayments(
+  public ResponseEntity<Collection<PaymentDTO>> getPaymentMethodPayments(
       @NonNull @PathVariable("methodId") Long methodId) {
 
     Counter counter = userService.getCurrentUser().getCounter();
@@ -131,30 +143,33 @@ public class PaymentMethodController {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    payments =
+    List<PaymentDTO> paymentDTOs =
         payments.stream()
             .filter(payment -> payment.getCounter().equals(counter))
+            .map(entityMapper::toDTO)
             .collect(Collectors.toList());
 
-    return new ResponseEntity<>(payments, HttpStatus.OK);
+    return new ResponseEntity<>(paymentDTOs, HttpStatus.OK);
   }
 
   /**
    * Create new payment method.
    *
-   * @param paymentMethod
+   * @param paymentMethodDTO
    * @return PaymentMethod object (created PaymentMethod object)
    */
   @RequestMapping(
       method = RequestMethod.POST,
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<PaymentMethod> createPaymentMethod(@RequestBody PaymentMethod method) {
+  public ResponseEntity<PaymentMethodDTO> createPaymentMethod(
+      @RequestBody PaymentMethodDTO paymentMethodDTO) {
 
     Merchant merchant = userService.getCurrentUser().getMerchant();
     if (merchant == null) {
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
+    PaymentMethod method = entityMapper.toEntity(paymentMethodDTO);
     method.setMerchant(merchant);
 
     method = paymentMethodService.create(method);
@@ -162,13 +177,13 @@ public class PaymentMethodController {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    return new ResponseEntity<>(method, HttpStatus.CREATED);
+    return new ResponseEntity<>(entityMapper.toDTO(method), HttpStatus.CREATED);
   }
 
   /**
    * Update payment method record.
    *
-   * @param paymenMethod
+   * @param paymentMethodDTO
    * @return PaymentMethod object (updated PaymentMethod object)
    */
   @RequestMapping(
@@ -176,25 +191,27 @@ public class PaymentMethodController {
       method = RequestMethod.PUT,
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<PaymentMethod> updatePaymentMethod(@RequestBody PaymentMethod method) {
+  public ResponseEntity<PaymentMethodDTO> updatePaymentMethod(
+      @RequestBody PaymentMethodDTO paymentMethodDTO) {
 
     Merchant merchant = userService.getCurrentUser().getMerchant();
     if (merchant == null) {
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
-    PaymentMethod existingMethod = paymentMethodService.findById(method.getId());
+    PaymentMethod existingMethod = paymentMethodService.findById(paymentMethodDTO.getId());
     if (existingMethod == null || !existingMethod.getMerchant().equals(merchant)) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    PaymentMethod method = entityMapper.toEntity(paymentMethodDTO);
     method.setMerchant(merchant);
     method = paymentMethodService.update(method);
     if (method == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    return new ResponseEntity<>(method, HttpStatus.OK);
+    return new ResponseEntity<>(entityMapper.toDTO(method), HttpStatus.OK);
   }
 
   @RequestMapping(

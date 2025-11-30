@@ -1,7 +1,9 @@
 package com.pressing.controller;
 
+import com.pressing.mapper.EntityMapper;
 import com.pressing.model.Counter;
 import com.pressing.model.MaterialPurchase;
+import com.pressing.model.MaterialPurchaseDTO;
 import com.pressing.service.MaterialPurchaseService;
 import com.pressing.service.UserService;
 import java.text.DateFormat;
@@ -9,9 +11,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +43,7 @@ public class MaterialPurchaseController {
 
   @Autowired private MaterialPurchaseService materialPurchaseService;
   @Autowired private UserService userService;
+  @Autowired private EntityMapper entityMapper;
 
   /**
    * Get all expenditures made or expenditures made on a given day.
@@ -47,7 +53,7 @@ public class MaterialPurchaseController {
    * @throws ParseException
    */
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Page<MaterialPurchase>> getExpenditures(
+  public ResponseEntity<Page<MaterialPurchaseDTO>> getExpenditures(
       @RequestParam(value = "purchaseDate", required = false) String purchaseDate,
       Pageable pageable)
       throws ParseException {
@@ -61,12 +67,20 @@ public class MaterialPurchaseController {
     if (purchaseDate != null) {
       DateFormat formatter = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
       Date date = formatter.parse(purchaseDate);
-      materialPurchases = materialPurchaseService.findByPurchasedDateAndCounter(date, counter, pageable);
+      materialPurchases =
+          materialPurchaseService.findByPurchasedDateAndCounter(date, counter, pageable);
     } else {
       materialPurchases = materialPurchaseService.findByCounter(counter, pageable);
     }
 
-    return new ResponseEntity<>(materialPurchases, HttpStatus.OK);
+    List<MaterialPurchaseDTO> dtos =
+        materialPurchases.getContent().stream()
+            .map(entityMapper::toDTO)
+            .collect(Collectors.toList());
+    Page<MaterialPurchaseDTO> result =
+        new PageImpl<>(dtos, pageable, materialPurchases.getTotalElements());
+
+    return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
   /**
@@ -79,7 +93,7 @@ public class MaterialPurchaseController {
       value = "/{purchaseId}",
       method = RequestMethod.GET,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<MaterialPurchase> getExpenditureById(
+  public ResponseEntity<MaterialPurchaseDTO> getExpenditureById(
       @PathVariable("purchaseId") Long purchaseId) {
 
     Counter counter = userService.getCurrentUser().getCounter();
@@ -92,26 +106,27 @@ public class MaterialPurchaseController {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    return new ResponseEntity<>(materialPurchase, HttpStatus.OK);
+    return new ResponseEntity<>(entityMapper.toDTO(materialPurchase), HttpStatus.OK);
   }
 
   /**
    * Create new expenditure record.
    *
-   * @param purchase
+   * @param purchaseDTO
    * @return MaterialPurchase Object (created MaterialPurchase object)
    */
   @RequestMapping(
       method = RequestMethod.POST,
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<MaterialPurchase> createExpenditure(
-      @RequestBody MaterialPurchase purchase) {
+  public ResponseEntity<MaterialPurchaseDTO> createExpenditure(
+      @RequestBody MaterialPurchaseDTO purchaseDTO) {
 
     Counter counter = userService.getCurrentUser().getCounter();
     if (counter == null) {
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
+    MaterialPurchase purchase = entityMapper.toEntity(purchaseDTO);
     purchase.setCounter(counter);
 
     purchase = materialPurchaseService.create(purchase);
@@ -119,13 +134,13 @@ public class MaterialPurchaseController {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    return new ResponseEntity<>(purchase, HttpStatus.CREATED);
+    return new ResponseEntity<>(entityMapper.toDTO(purchase), HttpStatus.CREATED);
   }
 
   /**
    * Update expenditure record.
    *
-   * @param expenditure
+   * @param purchaseDTO
    * @return MaterialPurchase Object (updated MaterialPurchase object)
    */
   @RequestMapping(
@@ -133,25 +148,26 @@ public class MaterialPurchaseController {
       method = RequestMethod.PUT,
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<MaterialPurchase> updateExpenditure(
-      @RequestBody MaterialPurchase purchase) {
+  public ResponseEntity<MaterialPurchaseDTO> updateExpenditure(
+      @RequestBody MaterialPurchaseDTO purchaseDTO) {
 
     Counter counter = userService.getCurrentUser().getCounter();
     if (counter == null) {
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
-    MaterialPurchase existingPurchase = materialPurchaseService.findById(purchase.getId());
+    MaterialPurchase existingPurchase = materialPurchaseService.findById(purchaseDTO.getId());
     if (existingPurchase == null || !existingPurchase.getCounter().equals(counter)) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    MaterialPurchase purchase = entityMapper.toEntity(purchaseDTO);
     purchase.setCounter(counter);
     purchase = materialPurchaseService.update(purchase);
     if (purchase == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    return new ResponseEntity<>(purchase, HttpStatus.OK);
+    return new ResponseEntity<>(entityMapper.toDTO(purchase), HttpStatus.OK);
   }
 }

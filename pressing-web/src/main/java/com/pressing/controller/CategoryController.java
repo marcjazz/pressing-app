@@ -1,15 +1,20 @@
 package com.pressing.controller;
 
+import com.pressing.mapper.EntityMapper;
 import com.pressing.model.Category;
+import com.pressing.model.CategoryDTO;
 import com.pressing.model.Item;
+import com.pressing.model.ItemDTO;
 import com.pressing.service.CategoryService;
 import com.pressing.service.ItemService;
 import java.util.ArrayList;
 import java.util.Collection;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageImpl;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +45,8 @@ public class CategoryController {
 
   @Autowired private com.pressing.service.UserService userService;
 
+  @Autowired private EntityMapper entityMapper;
+
   /**
    * Get all categories or category with a given name.
    *
@@ -47,24 +54,32 @@ public class CategoryController {
    * @return collection of categories or category with the given name
    */
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Page<Category>> getCategories(
-      @RequestParam(value = "categoryName", required = false) String categoryName, Pageable pageable) {
+  public ResponseEntity<Page<CategoryDTO>> getCategories(
+      @RequestParam(value = "categoryName", required = false) String categoryName,
+      Pageable pageable) {
 
     if (categoryName != null) {
       // This part is not paginated, as it returns a single or no category.
       // For a more consistent API, you might consider returning a Page with a single element.
-      Collection<Category> categories = new ArrayList<>();
+      Collection<CategoryDTO> categories = new ArrayList<>();
       Category category = categoryService.findByName(categoryName);
       if (category != null) {
-        categories.add(category);
+        categories.add(entityMapper.toDTO(category));
       }
-      // Returning a Page for a single item search might be complex, so we can return a list for this specific case.
+      // Returning a Page for a single item search might be complex, so we can return a list for this
+      // specific case.
       // Or, for consistency, create a Page object from the list.
-      Page<Category> singleResult = new PageImpl<>(new ArrayList<>(categories));
+      Page<CategoryDTO> singleResult = new PageImpl<>(new ArrayList<>(categories));
       return new ResponseEntity<>(singleResult, HttpStatus.OK);
     } else {
       Page<Category> allCategories = categoryService.findAll(pageable);
-      return new ResponseEntity<>(allCategories, HttpStatus.OK);
+      List<CategoryDTO> categoryDTOs =
+          allCategories.getContent().stream()
+              .map(entityMapper::toDTO)
+              .collect(Collectors.toList());
+      Page<CategoryDTO> result =
+          new PageImpl<>(categoryDTOs, pageable, allCategories.getTotalElements());
+      return new ResponseEntity<>(result, HttpStatus.OK);
     }
   }
 
@@ -78,14 +93,14 @@ public class CategoryController {
       value = "/{categoryId}",
       method = RequestMethod.GET,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Category> getCategoryById(@PathVariable("categoryId") Long categoryId) {
+  public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable("categoryId") Long categoryId) {
 
     Category category = categoryService.findById(categoryId);
     if (category == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    return new ResponseEntity<>(category, HttpStatus.OK);
+    return new ResponseEntity<>(entityMapper.toDTO(category), HttpStatus.OK);
   }
 
   /**
@@ -98,37 +113,40 @@ public class CategoryController {
       value = "/{categoryId}/items",
       method = RequestMethod.GET,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Collection<Item>> getCategoryItems(
+  public ResponseEntity<Collection<ItemDTO>> getCategoryItems(
       @PathVariable("categoryId") Long categoryId) {
 
     Collection<Item> items = itemService.findCategoryItems(categoryId);
-    return new ResponseEntity<>(items, HttpStatus.OK);
+    Collection<ItemDTO> itemDTOs =
+        items.stream().map(entityMapper::toDTO).collect(Collectors.toList());
+    return new ResponseEntity<>(itemDTOs, HttpStatus.OK);
   }
 
   /**
    * Create new category.
    *
-   * @param category
+   * @param categoryDTO
    * @return Category Object (created object)
    */
   @RequestMapping(
       method = RequestMethod.POST,
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Category> createCategory(@RequestBody Category category) {
+  public ResponseEntity<CategoryDTO> createCategory(@RequestBody CategoryDTO categoryDTO) {
+    Category category = entityMapper.toEntity(categoryDTO);
     category.setMerchant(userService.getCurrentUser().getMerchant());
     category = categoryService.create(category);
     if (category == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    return new ResponseEntity<>(category, HttpStatus.CREATED);
+    return new ResponseEntity<>(entityMapper.toDTO(category), HttpStatus.CREATED);
   }
 
   /**
    * Update category.
    *
-   * @param category
+   * @param categoryDTO
    * @return Category Object (updated object).
    */
   @RequestMapping(
@@ -136,13 +154,14 @@ public class CategoryController {
       method = RequestMethod.PUT,
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Category> updateCategory(@RequestBody Category category) {
+  public ResponseEntity<CategoryDTO> updateCategory(@RequestBody CategoryDTO categoryDTO) {
 
+    Category category = entityMapper.toEntity(categoryDTO);
     category = categoryService.update(category);
     if (category == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    return new ResponseEntity<>(category, HttpStatus.OK);
+    return new ResponseEntity<>(entityMapper.toDTO(category), HttpStatus.OK);
   }
 }

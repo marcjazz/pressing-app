@@ -1,6 +1,8 @@
 package com.pressing.controller;
 
+import com.pressing.mapper.EntityMapper;
 import com.pressing.model.Permission;
+import com.pressing.model.PermissionDTO;
 import com.pressing.model.Role;
 import com.pressing.model.RoleDTO;
 import com.pressing.service.PermissionService;
@@ -9,10 +11,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +44,8 @@ public class RoleController {
 
   @Autowired private PermissionService permissionService;
 
+  @Autowired private EntityMapper entityMapper;
+
   /**
    * Get all roles or role with a given name.
    *
@@ -48,7 +53,7 @@ public class RoleController {
    * @return Collection of roles in the system or role with the given name
    */
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Page<Role>> getRoles(
+  public ResponseEntity<Page<RoleDTO>> getRoles(
       @RequestParam(value = "roleName", required = false) String roleName,
       Pageable pageable) {
 
@@ -64,7 +69,11 @@ public class RoleController {
       roles = roleService.findAll(pageable);
     }
 
-    return new ResponseEntity<>(roles, HttpStatus.OK);
+    List<RoleDTO> dtos =
+        roles.getContent().stream().map(entityMapper::toDTO).collect(Collectors.toList());
+    Page<RoleDTO> result = new PageImpl<>(dtos, pageable, roles.getTotalElements());
+
+    return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
   /**
@@ -77,14 +86,14 @@ public class RoleController {
       value = "/{roleId}",
       method = RequestMethod.GET,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Role> getPaymentMethodById(@PathVariable("roleId") Long roleId) {
+  public ResponseEntity<RoleDTO> getPaymentMethodById(@PathVariable("roleId") Long roleId) {
 
     Role role = roleService.findById(roleId);
     if (role == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    return new ResponseEntity<>(role, HttpStatus.OK);
+    return new ResponseEntity<>(entityMapper.toDTO(role), HttpStatus.OK);
   }
 
   /**
@@ -97,7 +106,7 @@ public class RoleController {
       value = "/{roleId}/permissions",
       method = RequestMethod.GET,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Collection<Permission>> getRolePermissions(
+  public ResponseEntity<Collection<PermissionDTO>> getRolePermissions(
       @PathVariable("roleId") Long roleId) {
 
     Collection<Permission> permissions = roleService.findById(roleId).getPermissions();
@@ -105,41 +114,44 @@ public class RoleController {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    return new ResponseEntity<>(permissions, HttpStatus.OK);
+    List<PermissionDTO> permissionDTOs =
+        permissions.stream().map(entityMapper::toDTO).collect(Collectors.toList());
+
+    return new ResponseEntity<>(permissionDTOs, HttpStatus.OK);
   }
 
   /**
    * Create new role.
    *
-   * @param newRole
+   * @param roleDTO
    * @return Role Object (created role object)
    */
   @RequestMapping(
       method = RequestMethod.POST,
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Role> createRole(@RequestBody RoleDTO role) {
+  public ResponseEntity<RoleDTO> createRole(@RequestBody RoleDTO roleDTO) {
     int count = 0;
     List<Permission> permissions = new ArrayList<>();
-    while (role.getPermissionIds().size() > count) {
-      permissions.add(permissionService.findById(role.getPermissionIds().get(count++)));
+    while (roleDTO.getPermissionIds().size() > count) {
+      permissions.add(permissionService.findById(roleDTO.getPermissionIds().get(count++)));
     }
     Role newRole = new Role();
-    newRole.setName(role.getName());
-    newRole.setDescription(role.getDescription());
+    newRole.setName(roleDTO.getName());
+    newRole.setDescription(roleDTO.getDescription());
     newRole.setPermissions(permissions);
     newRole = roleService.create(newRole);
     if (newRole == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    return new ResponseEntity<>(newRole, HttpStatus.CREATED);
+    return new ResponseEntity<>(entityMapper.toDTO(newRole), HttpStatus.CREATED);
   }
 
   /**
    * Update role record.
    *
-   * @param role
+   * @param roleDTO
    * @return Role object (updated role object).
    */
   @RequestMapping(
@@ -147,14 +159,14 @@ public class RoleController {
       method = RequestMethod.PUT,
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Role> updateRole(@RequestBody RoleDTO role) {
+  public ResponseEntity<RoleDTO> updateRole(@RequestBody RoleDTO roleDTO) {
     int count = 0;
     List<Permission> permissions = new ArrayList<>();
-    while (role.getPermissionIds().size() > count) {
-      permissions.add(permissionService.findById(role.getPermissionIds().get(count++)));
+    while (roleDTO.getPermissionIds().size() > count) {
+      permissions.add(permissionService.findById(roleDTO.getPermissionIds().get(count++)));
     }
-    Role newRole = roleService.findById(role.getId());
-    newRole.setDescription(role.getDescription());
+    Role newRole = roleService.findById(roleDTO.getId());
+    newRole.setDescription(roleDTO.getDescription());
     newRole.setPermissions(permissions);
     newRole = roleService.create(newRole);
     newRole = roleService.update(newRole);
@@ -163,6 +175,6 @@ public class RoleController {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    return new ResponseEntity<>(newRole, HttpStatus.OK);
+    return new ResponseEntity<>(entityMapper.toDTO(newRole), HttpStatus.OK);
   }
 }

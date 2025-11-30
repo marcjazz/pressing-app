@@ -1,3 +1,2 @@
 // This is the build file for the pressing-dto module.
 bootJar.enabled = false
-bootJar.enabled = false

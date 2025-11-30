@@ -1,16 +1,19 @@
 package com.pressing.controller;
 
+import com.pressing.mapper.EntityMapper;
 import com.pressing.model.CleaningMaterial;
+import com.pressing.model.CleaningMaterialDTO;
 import com.pressing.model.Merchant;
 import com.pressing.service.CleaningMaterialService;
 import com.pressing.service.UserService;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +40,7 @@ public class CleaningMaterialController {
 
   @Autowired private CleaningMaterialService cleaningMaterialService;
   @Autowired private UserService userService;
+  @Autowired private EntityMapper entityMapper;
 
   /**
    * Get all cleaning materials or cleaning material with a given name.
@@ -45,8 +49,9 @@ public class CleaningMaterialController {
    * @return Collection of cleaning materials or material with the given name
    */
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Page<CleaningMaterial>> getCleaningMaterials(
-      @RequestParam(value = "materialName", required = false) String materialName, Pageable pageable) {
+  public ResponseEntity<Page<CleaningMaterialDTO>> getCleaningMaterials(
+      @RequestParam(value = "materialName", required = false) String materialName,
+      Pageable pageable) {
 
     Merchant merchant = userService.getCurrentUser().getMerchant();
     if (merchant == null) {
@@ -54,16 +59,22 @@ public class CleaningMaterialController {
     }
 
     if (materialName != null) {
-      Collection<CleaningMaterial> materials = new ArrayList<>();
+      Collection<CleaningMaterialDTO> materials = new ArrayList<>();
       CleaningMaterial material = cleaningMaterialService.findByName(materialName);
       if (material != null && material.getMerchant().equals(merchant)) {
-        materials.add(material);
+        materials.add(entityMapper.toDTO(material));
       }
-      Page<CleaningMaterial> singleResult = new PageImpl<>(new ArrayList<>(materials));
+      Page<CleaningMaterialDTO> singleResult = new PageImpl<>(new ArrayList<>(materials));
       return new ResponseEntity<>(singleResult, HttpStatus.OK);
     } else {
       Page<CleaningMaterial> materials = cleaningMaterialService.findByMerchant(merchant, pageable);
-      return new ResponseEntity<>(materials, HttpStatus.OK);
+      List<CleaningMaterialDTO> materialDTOs =
+          materials.getContent().stream()
+              .map(entityMapper::toDTO)
+              .collect(Collectors.toList());
+      Page<CleaningMaterialDTO> result =
+          new PageImpl<>(materialDTOs, pageable, materials.getTotalElements());
+      return new ResponseEntity<>(result, HttpStatus.OK);
     }
   }
 
@@ -77,7 +88,7 @@ public class CleaningMaterialController {
       value = "/{materialId}",
       method = RequestMethod.GET,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<CleaningMaterial> getCleaningMaterialById(
+  public ResponseEntity<CleaningMaterialDTO> getCleaningMaterialById(
       @PathVariable("materialId") Long materialId) {
 
     Merchant merchant = userService.getCurrentUser().getMerchant();
@@ -90,26 +101,27 @@ public class CleaningMaterialController {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    return new ResponseEntity<>(material, HttpStatus.OK);
+    return new ResponseEntity<>(entityMapper.toDTO(material), HttpStatus.OK);
   }
 
   /**
    * Create new cleaning material.
    *
-   * @param material
+   * @param materialDTO
    * @return CleaningMaterial object (created object)
    */
   @RequestMapping(
       method = RequestMethod.POST,
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<CleaningMaterial> createCleaningMaterial(
-      @RequestBody CleaningMaterial material) {
+  public ResponseEntity<CleaningMaterialDTO> createCleaningMaterial(
+      @RequestBody CleaningMaterialDTO materialDTO) {
 
     Merchant merchant = userService.getCurrentUser().getMerchant();
     if (merchant == null) {
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
+    CleaningMaterial material = entityMapper.toEntity(materialDTO);
     material.setMerchant(merchant);
 
     material = cleaningMaterialService.create(material);
@@ -117,13 +129,13 @@ public class CleaningMaterialController {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    return new ResponseEntity<>(material, HttpStatus.CREATED);
+    return new ResponseEntity<>(entityMapper.toDTO(material), HttpStatus.CREATED);
   }
 
   /**
    * Update cleaning material.
    *
-   * @param material
+   * @param materialDTO
    * @return CleaningMaterial object (updated object).
    */
   @RequestMapping(
@@ -131,25 +143,26 @@ public class CleaningMaterialController {
       method = RequestMethod.PUT,
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<CleaningMaterial> updateCleaningMaterial(
-      @RequestBody CleaningMaterial material) {
+  public ResponseEntity<CleaningMaterialDTO> updateCleaningMaterial(
+      @RequestBody CleaningMaterialDTO materialDTO) {
 
     Merchant merchant = userService.getCurrentUser().getMerchant();
     if (merchant == null) {
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
-    CleaningMaterial existingMaterial = cleaningMaterialService.findById(material.getId());
+    CleaningMaterial existingMaterial = cleaningMaterialService.findById(materialDTO.getId());
     if (existingMaterial == null || !existingMaterial.getMerchant().equals(merchant)) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    CleaningMaterial material = entityMapper.toEntity(materialDTO);
     material.setMerchant(merchant);
     material = cleaningMaterialService.update(material);
     if (material == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    return new ResponseEntity<>(material, HttpStatus.OK);
+    return new ResponseEntity<>(entityMapper.toDTO(material), HttpStatus.OK);
   }
 }

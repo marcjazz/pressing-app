@@ -1,11 +1,15 @@
 package com.pressing.controller;
 
+import com.pressing.mapper.EntityMapper;
 import com.pressing.model.Counter;
+import com.pressing.model.CounterDTO;
 import com.pressing.service.CounterService;
 import java.util.List;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,16 +21,21 @@ public class CounterController {
 
   private final CounterService counterService;
   private final com.pressing.service.UserService userService;
+  private final EntityMapper entityMapper;
 
   @Autowired
   public CounterController(
-      CounterService counterService, com.pressing.service.UserService userService) {
+      CounterService counterService,
+      com.pressing.service.UserService userService,
+      EntityMapper entityMapper) {
     this.counterService = counterService;
     this.userService = userService;
+    this.entityMapper = entityMapper;
   }
 
   @PostMapping
-  public ResponseEntity<Counter> save(@RequestBody Counter counter) {
+  public ResponseEntity<CounterDTO> save(@RequestBody CounterDTO counterDTO) {
+    Counter counter = entityMapper.toEntity(counterDTO);
     com.pressing.model.CustomUser currentUser = userService.getCurrentUser();
     if (currentUser.getMerchant() != null) {
       com.pressing.model.Merchant merchant = currentUser.getMerchant();
@@ -41,17 +50,26 @@ public class CounterController {
       // Handle case where user is not a merchant
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
-    return new ResponseEntity<>(counterService.save(counter), HttpStatus.CREATED);
+    return new ResponseEntity<>(
+        entityMapper.toDTO(counterService.save(counter)), HttpStatus.CREATED);
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Counter> findById(@PathVariable("id") Long id) {
-    return new ResponseEntity<>(counterService.findById(id), HttpStatus.OK);
+  public ResponseEntity<CounterDTO> findById(@PathVariable("id") Long id) {
+    return new ResponseEntity<>(
+        entityMapper.toDTO(counterService.findById(id)), HttpStatus.OK);
   }
 
   @GetMapping
-  public ResponseEntity<Page<Counter>> findAll(Pageable pageable) {
-    return new ResponseEntity<>(counterService.findAll(pageable), HttpStatus.OK);
+  public ResponseEntity<Page<CounterDTO>> findAll(Pageable pageable) {
+    Page<Counter> counters = counterService.findAll(pageable);
+    List<CounterDTO> counterDTOs =
+        counters.getContent().stream()
+            .map(entityMapper::toDTO)
+            .collect(Collectors.toList());
+    Page<CounterDTO> result =
+        new PageImpl<>(counterDTOs, pageable, counters.getTotalElements());
+    return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
   @DeleteMapping("/{id}")

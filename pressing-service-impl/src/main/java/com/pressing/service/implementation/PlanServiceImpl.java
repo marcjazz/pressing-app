@@ -3,12 +3,11 @@ package com.pressing.service.implementation;
 import com.pressing.model.Plan;
 import com.pressing.repository.PlanRepository;
 import com.pressing.service.PlanService;
-import java.util.List;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,7 +21,9 @@ public class PlanServiceImpl implements PlanService {
   }
 
   @Override
-  @CacheEvict(value = {"plans", "plan"}, allEntries = true)
+  @CacheEvict(
+      value = {"plans", "plan"},
+      allEntries = true)
   public Plan create(Plan plan) {
     return planRepository.save(plan);
   }
@@ -40,7 +41,9 @@ public class PlanServiceImpl implements PlanService {
   }
 
   @Override
-  @CacheEvict(value = {"plans", "plan"}, allEntries = true)
+  @CacheEvict(
+      value = {"plans", "plan"},
+      allEntries = true)
   public void delete(Integer id) {
     planRepository.deleteById(id);
   }

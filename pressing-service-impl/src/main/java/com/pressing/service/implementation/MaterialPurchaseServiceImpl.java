@@ -5,12 +5,12 @@ import com.pressing.model.MaterialPurchase;
 import com.pressing.repository.MaterialPurchaseRepository;
 import com.pressing.service.MaterialPurchaseService;
 import java.util.Collection;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
@@ -33,8 +33,11 @@ public class MaterialPurchaseServiceImpl implements MaterialPurchaseService {
   }
 
   @Override
-  @Cacheable(value = "materialPurchasesByDateAndCounter", key = "#date.toString() + '-' + #counter.id")
-  public Page<MaterialPurchase> findByPurchasedDateAndCounter(Date date, Counter counter, Pageable pageable) {
+  @Cacheable(
+      value = "materialPurchasesByDateAndCounter",
+      key = "#date.toString() + '-' + #counter.id")
+  public Page<MaterialPurchase> findByPurchasedDateAndCounter(
+      Date date, Counter counter, Pageable pageable) {
     return materialpurchaserepository.findByPurchasedDateAndCounter(date, counter, pageable);
   }
 
@@ -66,7 +69,14 @@ public class MaterialPurchaseServiceImpl implements MaterialPurchaseService {
   }
 
   @Override
-  @CacheEvict(value = {"materialPurchases", "materialPurchase", "materialPurchasesByCounter", "materialPurchasesByDateAndCounter"}, allEntries = true)
+  @CacheEvict(
+      value = {
+        "materialPurchases",
+        "materialPurchase",
+        "materialPurchasesByCounter",
+        "materialPurchasesByDateAndCounter"
+      },
+      allEntries = true)
   public MaterialPurchase create(MaterialPurchase purchase) {
     if (purchase == null) {
       return null;
@@ -77,7 +87,14 @@ public class MaterialPurchaseServiceImpl implements MaterialPurchaseService {
   }
 
   @Override
-  @CacheEvict(value = {"materialPurchases", "materialPurchase", "materialPurchasesByCounter", "materialPurchasesByDateAndCounter"}, allEntries = true)
+  @CacheEvict(
+      value = {
+        "materialPurchases",
+        "materialPurchase",
+        "materialPurchasesByCounter",
+        "materialPurchasesByDateAndCounter"
+      },
+      allEntries = true)
   public MaterialPurchase update(MaterialPurchase purchase) {
     if (purchase == null) {
       return null;

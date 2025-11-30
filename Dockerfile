@@ -8,6 +8,6 @@ RUN gradle clean build --no-daemon && ls -l build/libs
 # Package stage
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-COPY --from=build /home/gradle/src/build/libs/pressing-management-0.0.1-SNAPSHOT.jar .
+COPY --from=build /home/gradle/src/pressing-web/build/libs/pressing-app-0.0.1.jar .
 EXPOSE 8080
-CMD ["java", "-jar", "pressing-management-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "pressing-app-0.0.1.jar"]

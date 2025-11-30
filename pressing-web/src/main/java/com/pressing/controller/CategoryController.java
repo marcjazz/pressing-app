@@ -66,7 +66,8 @@ public class CategoryController {
       if (category != null) {
         categories.add(entityMapper.toDTO(category));
       }
-      // Returning a Page for a single item search might be complex, so we can return a list for this
+      // Returning a Page for a single item search might be complex, so we can return a list for
+      // this
       // specific case.
       // Or, for consistency, create a Page object from the list.
       Page<CategoryDTO> singleResult = new PageImpl<>(new ArrayList<>(categories));
@@ -74,9 +75,7 @@ public class CategoryController {
     } else {
       Page<Category> allCategories = categoryService.findAll(pageable);
       List<CategoryDTO> categoryDTOs =
-          allCategories.getContent().stream()
-              .map(entityMapper::toDTO)
-              .collect(Collectors.toList());
+          allCategories.getContent().stream().map(entityMapper::toDTO).collect(Collectors.toList());
       Page<CategoryDTO> result =
           new PageImpl<>(categoryDTOs, pageable, allCategories.getTotalElements());
       return new ResponseEntity<>(result, HttpStatus.OK);

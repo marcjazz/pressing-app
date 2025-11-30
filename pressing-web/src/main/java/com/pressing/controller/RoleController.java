@@ -54,8 +54,7 @@ public class RoleController {
    */
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Page<RoleDTO>> getRoles(
-      @RequestParam(value = "roleName", required = false) String roleName,
-      Pageable pageable) {
+      @RequestParam(value = "roleName", required = false) String roleName, Pageable pageable) {
 
     Page<Role> roles;
     if (roleName != null) {

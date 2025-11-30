@@ -92,9 +92,7 @@ public class CustomerController {
     } else {
       Page<Customer> allCustomers = customerService.findByCounter(counter, pageable);
       List<CustomerDTO> customerDTOs =
-          allCustomers.getContent().stream()
-              .map(entityMapper::toDTO)
-              .collect(Collectors.toList());
+          allCustomers.getContent().stream().map(entityMapper::toDTO).collect(Collectors.toList());
       Page<CustomerDTO> result =
           new PageImpl<>(customerDTOs, pageable, allCustomers.getTotalElements());
       return new ResponseEntity<>(result, HttpStatus.OK);

@@ -3,9 +3,9 @@ package com.pressing.service;
 import com.pressing.model.Counter;
 import com.pressing.model.MaterialPurchase;
 import java.util.Collection;
+import java.util.Date;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import java.util.Date;
 
 /** Service that provides CRUD operations for material purchases */
 public interface MaterialPurchaseService {
@@ -35,7 +35,8 @@ public interface MaterialPurchaseService {
 
   public Page<MaterialPurchase> findByCounter(Counter counter, Pageable pageable);
 
-  public Page<MaterialPurchase> findByPurchasedDateAndCounter(Date date, Counter counter, Pageable pageable);
+  public Page<MaterialPurchase> findByPurchasedDateAndCounter(
+      Date date, Counter counter, Pageable pageable);
 
   /**
    * Find a purchase by cleaning material.

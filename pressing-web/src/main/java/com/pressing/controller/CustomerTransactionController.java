@@ -1,7 +1,6 @@
 package com.pressing.controller;
 
 import com.pressing.mapper.EntityMapper;
-import com.pressing.model.CustomerItem;
 import com.pressing.model.Payment;
 import com.pressing.model.PaymentDTO;
 import com.pressing.model.Transaction;
@@ -119,9 +118,7 @@ public class CustomerTransactionController {
     }
 
     List<TransactionDTO> transactionDTOs =
-        transactions.getContent().stream()
-            .map(entityMapper::toDTO)
-            .collect(Collectors.toList());
+        transactions.getContent().stream().map(entityMapper::toDTO).collect(Collectors.toList());
     Page<TransactionDTO> result =
         new PageImpl<>(transactionDTOs, pageable, transactions.getTotalElements());
 

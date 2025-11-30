@@ -42,7 +42,8 @@ public interface PaymentMethodService {
 
   public Page<PaymentMethod> findByMerchant(Merchant merchant, Pageable pageable);
 
-  public Page<PaymentMethod> findByMerchantAndIsActive(Merchant merchant, boolean isActive, Pageable pageable);
+  public Page<PaymentMethod> findByMerchantAndIsActive(
+      Merchant merchant, boolean isActive, Pageable pageable);
 
   /**
    * Create new payment method.

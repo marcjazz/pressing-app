@@ -16,5 +16,6 @@ public interface UserRepository extends JpaRepository<CustomUser, Long> {
 
   Page<CustomUser> findByMerchant(Merchant merchant, Pageable pageable);
 
-  Page<CustomUser> findByMerchantAndIsActive(Merchant merchant, boolean isActive, Pageable pageable);
+  Page<CustomUser> findByMerchantAndIsActive(
+      Merchant merchant, boolean isActive, Pageable pageable);
 }

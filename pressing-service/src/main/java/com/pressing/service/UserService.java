@@ -3,9 +3,9 @@ package com.pressing.service;
 import com.pressing.model.CustomUser;
 import com.pressing.model.Merchant;
 import java.util.Collection;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import java.util.Optional;
 
 /** Service that provides CRUD operations for users */
 public interface UserService {
@@ -43,7 +43,8 @@ public interface UserService {
 
   public Page<CustomUser> findByMerchant(Merchant merchant, Pageable pageable);
 
-  public Page<CustomUser> findByMerchantAndIsActive(Merchant merchant, boolean isActive, Pageable pageable);
+  public Page<CustomUser> findByMerchantAndIsActive(
+      Merchant merchant, boolean isActive, Pageable pageable);
 
   /**
    * Create new user.

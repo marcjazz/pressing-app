@@ -10,7 +10,6 @@ import com.pressing.model.PaymentMethodDTO;
 import com.pressing.service.PaymentMethodService;
 import com.pressing.service.PaymentService;
 import com.pressing.service.UserService;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -85,9 +84,7 @@ public class PaymentMethodController {
     }
 
     List<PaymentMethodDTO> dtos =
-        paymentMethods.getContent().stream()
-            .map(entityMapper::toDTO)
-            .collect(Collectors.toList());
+        paymentMethods.getContent().stream().map(entityMapper::toDTO).collect(Collectors.toList());
     Page<PaymentMethodDTO> result =
         new PageImpl<>(dtos, pageable, paymentMethods.getTotalElements());
 

@@ -16,5 +16,6 @@ public interface PaymentMethodRepository extends JpaRepository<PaymentMethod, Lo
 
   Page<PaymentMethod> findByMerchant(Merchant merchant, Pageable pageable);
 
-  Page<PaymentMethod> findByMerchantAndIsActive(Merchant merchant, boolean isActive, Pageable pageable);
+  Page<PaymentMethod> findByMerchantAndIsActive(
+      Merchant merchant, boolean isActive, Pageable pageable);
 }

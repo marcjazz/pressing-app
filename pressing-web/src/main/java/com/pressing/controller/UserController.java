@@ -8,7 +8,6 @@ import com.pressing.model.UserDTO;
 import com.pressing.service.RoleService;
 import com.pressing.service.UserService;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;

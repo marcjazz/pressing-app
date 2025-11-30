@@ -2,9 +2,9 @@ package com.pressing.service;
 
 import com.pressing.model.Transaction;
 import java.util.Collection;
+import java.util.Date;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import java.util.Date;
 
 /** Service that provides CRUD operations for transactions */
 public interface TransactionService {

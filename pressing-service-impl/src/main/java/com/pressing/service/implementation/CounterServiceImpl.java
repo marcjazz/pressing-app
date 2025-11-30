@@ -3,13 +3,12 @@ package com.pressing.service.implementation;
 import com.pressing.model.Counter;
 import com.pressing.repository.CounterRepository;
 import com.pressing.service.CounterService;
-import java.util.List;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,7 +23,9 @@ public class CounterServiceImpl implements CounterService {
   }
 
   @Override
-  @CacheEvict(value = {"counters", "counter"}, allEntries = true)
+  @CacheEvict(
+      value = {"counters", "counter"},
+      allEntries = true)
   public Counter save(Counter counter) {
     return counterRepository.save(counter);
   }
@@ -42,7 +43,9 @@ public class CounterServiceImpl implements CounterService {
   }
 
   @Override
-  @CacheEvict(value = {"counters", "counter"}, allEntries = true)
+  @CacheEvict(
+      value = {"counters", "counter"},
+      allEntries = true)
   public void delete(Long id) {
     counterRepository.deleteById(id);
   }

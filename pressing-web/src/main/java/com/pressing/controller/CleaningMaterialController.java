@@ -69,9 +69,7 @@ public class CleaningMaterialController {
     } else {
       Page<CleaningMaterial> materials = cleaningMaterialService.findByMerchant(merchant, pageable);
       List<CleaningMaterialDTO> materialDTOs =
-          materials.getContent().stream()
-              .map(entityMapper::toDTO)
-              .collect(Collectors.toList());
+          materials.getContent().stream().map(entityMapper::toDTO).collect(Collectors.toList());
       Page<CleaningMaterialDTO> result =
           new PageImpl<>(materialDTOs, pageable, materials.getTotalElements());
       return new ResponseEntity<>(result, HttpStatus.OK);

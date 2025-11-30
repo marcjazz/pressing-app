@@ -51,25 +51,20 @@ public class AgencyController {
       // Handle case where user is not a merchant
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
-    return new ResponseEntity<>(
-        entityMapper.toDTO(agencyService.save(agency)), HttpStatus.CREATED);
+    return new ResponseEntity<>(entityMapper.toDTO(agencyService.save(agency)), HttpStatus.CREATED);
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<AgencyDTO> findById(@PathVariable("id") Long id) {
-    return new ResponseEntity<>(
-        entityMapper.toDTO(agencyService.findById(id)), HttpStatus.OK);
+    return new ResponseEntity<>(entityMapper.toDTO(agencyService.findById(id)), HttpStatus.OK);
   }
 
   @GetMapping
   public ResponseEntity<Page<AgencyDTO>> findAll(Pageable pageable) {
     Page<Agency> agencies = agencyService.findAll(pageable);
     List<AgencyDTO> agencyDTOs =
-        agencies.getContent().stream()
-            .map(entityMapper::toDTO)
-            .collect(Collectors.toList());
-    Page<AgencyDTO> result =
-        new PageImpl<>(agencyDTOs, pageable, agencies.getTotalElements());
+        agencies.getContent().stream().map(entityMapper::toDTO).collect(Collectors.toList());
+    Page<AgencyDTO> result = new PageImpl<>(agencyDTOs, pageable, agencies.getTotalElements());
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 

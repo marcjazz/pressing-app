@@ -56,19 +56,15 @@ public class CounterController {
 
   @GetMapping("/{id}")
   public ResponseEntity<CounterDTO> findById(@PathVariable("id") Long id) {
-    return new ResponseEntity<>(
-        entityMapper.toDTO(counterService.findById(id)), HttpStatus.OK);
+    return new ResponseEntity<>(entityMapper.toDTO(counterService.findById(id)), HttpStatus.OK);
   }
 
   @GetMapping
   public ResponseEntity<Page<CounterDTO>> findAll(Pageable pageable) {
     Page<Counter> counters = counterService.findAll(pageable);
     List<CounterDTO> counterDTOs =
-        counters.getContent().stream()
-            .map(entityMapper::toDTO)
-            .collect(Collectors.toList());
-    Page<CounterDTO> result =
-        new PageImpl<>(counterDTOs, pageable, counters.getTotalElements());
+        counters.getContent().stream().map(entityMapper::toDTO).collect(Collectors.toList());
+    Page<CounterDTO> result = new PageImpl<>(counterDTOs, pageable, counters.getTotalElements());
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 

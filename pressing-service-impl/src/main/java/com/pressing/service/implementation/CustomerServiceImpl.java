@@ -5,11 +5,11 @@ import com.pressing.model.Customer;
 import com.pressing.repository.CustomerRepository;
 import com.pressing.service.CustomerService;
 import java.util.Collection;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +33,8 @@ public class CustomerServiceImpl implements CustomerService {
 
   @Override
   @Cacheable(value = "customersByActiveAndCounter", key = "#isActive + '-' + #counter.id")
-  public Page<Customer> findByIsActiveAndCounter(boolean isActive, Counter counter, Pageable pageable) {
+  public Page<Customer> findByIsActiveAndCounter(
+      boolean isActive, Counter counter, Pageable pageable) {
     return customerRepository.findByIsActiveAndCounter(isActive, counter, pageable);
   }
 
@@ -63,7 +64,9 @@ public class CustomerServiceImpl implements CustomerService {
   }
 
   @Override
-  @CacheEvict(value = {"customers", "customer", "customersByCounter", "customersByActiveAndCounter"}, allEntries = true)
+  @CacheEvict(
+      value = {"customers", "customer", "customersByCounter", "customersByActiveAndCounter"},
+      allEntries = true)
   public Customer create(Customer customer) {
 
     if (findByEmail(customer.getEmail()) == null) {
@@ -75,7 +78,9 @@ public class CustomerServiceImpl implements CustomerService {
   }
 
   @Override
-  @CacheEvict(value = {"customers", "customer", "customersByCounter", "customersByActiveAndCounter"}, allEntries = true)
+  @CacheEvict(
+      value = {"customers", "customer", "customersByCounter", "customersByActiveAndCounter"},
+      allEntries = true)
   public Customer update(Customer customer) {
     if (customer == null) {
       return null;
@@ -86,7 +91,9 @@ public class CustomerServiceImpl implements CustomerService {
   }
 
   @Override
-  @CacheEvict(value = {"customers", "customer", "customersByCounter", "customersByActiveAndCounter"}, allEntries = true)
+  @CacheEvict(
+      value = {"customers", "customer", "customersByCounter", "customersByActiveAndCounter"},
+      allEntries = true)
   public void deactivate(Long id) {
 
     Customer customer = findById(id);

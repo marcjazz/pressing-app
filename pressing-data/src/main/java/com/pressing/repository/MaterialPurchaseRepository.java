@@ -17,5 +17,6 @@ public interface MaterialPurchaseRepository extends JpaRepository<MaterialPurcha
 
   Page<MaterialPurchase> findByCounter(Counter counter, Pageable pageable);
 
-  Page<MaterialPurchase> findByPurchasedDateAndCounter(Date date, Counter counter, Pageable pageable);
+  Page<MaterialPurchase> findByPurchasedDateAndCounter(
+      Date date, Counter counter, Pageable pageable);
 }

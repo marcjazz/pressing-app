@@ -3,12 +3,11 @@ package com.pressing.service.implementation;
 import com.pressing.model.Permission;
 import com.pressing.repository.PermissionRepository;
 import com.pressing.service.PermissionService;
-import java.util.Collection;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +42,9 @@ public class PermissionServiceImpl implements PermissionService {
   }
 
   @Override
-  @CacheEvict(value = {"permissions", "permission"}, allEntries = true)
+  @CacheEvict(
+      value = {"permissions", "permission"},
+      allEntries = true)
   public Permission create(Permission permission) {
     if (permission == null) {
       return null;
@@ -54,7 +55,9 @@ public class PermissionServiceImpl implements PermissionService {
   }
 
   @Override
-  @CacheEvict(value = {"permissions", "permission"}, allEntries = true)
+  @CacheEvict(
+      value = {"permissions", "permission"},
+      allEntries = true)
   public Permission update(Permission permission) {
     if (permission == null || permission.getId() == null) {
       return null;

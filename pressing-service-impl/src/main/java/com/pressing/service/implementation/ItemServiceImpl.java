@@ -7,11 +7,11 @@ import com.pressing.repository.CategoryRepository;
 import com.pressing.repository.ItemRepository;
 import com.pressing.service.ItemService;
 import java.util.Collection;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
@@ -54,7 +54,9 @@ public class ItemServiceImpl implements ItemService {
   }
 
   @Override
-  @CacheEvict(value = {"items", "item", "itemsByMerchant"}, allEntries = true)
+  @CacheEvict(
+      value = {"items", "item", "itemsByMerchant"},
+      allEntries = true)
   public Item create(Item item) {
 
     if (itemRepository.findByName(item.getName()) == null) {
@@ -66,7 +68,9 @@ public class ItemServiceImpl implements ItemService {
   }
 
   @Override
-  @CacheEvict(value = {"items", "item", "itemsByMerchant"}, allEntries = true)
+  @CacheEvict(
+      value = {"items", "item", "itemsByMerchant"},
+      allEntries = true)
   public Item update(Item item) {
     if (item == null) {
       return null;
@@ -77,7 +81,9 @@ public class ItemServiceImpl implements ItemService {
   }
 
   @Override
-  @CacheEvict(value = {"items", "item", "itemsByMerchant"}, allEntries = true)
+  @CacheEvict(
+      value = {"items", "item", "itemsByMerchant"},
+      allEntries = true)
   public void delete(Long id) {
 
     Item item = findById(id);

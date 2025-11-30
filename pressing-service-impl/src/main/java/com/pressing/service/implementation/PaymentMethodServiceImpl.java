@@ -5,11 +5,11 @@ import com.pressing.model.PaymentMethod;
 import com.pressing.repository.PaymentMethodRepository;
 import com.pressing.service.PaymentMethodService;
 import java.util.Collection;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
@@ -56,12 +56,20 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 
   @Override
   @Cacheable(value = "paymentMethodsByMerchantAndActive", key = "#merchant.id + '-' + #isActive")
-  public Page<PaymentMethod> findByMerchantAndIsActive(Merchant merchant, boolean isActive, Pageable pageable) {
+  public Page<PaymentMethod> findByMerchantAndIsActive(
+      Merchant merchant, boolean isActive, Pageable pageable) {
     return paymentMethodRepository.findByMerchantAndIsActive(merchant, isActive, pageable);
   }
 
   @Override
-  @CacheEvict(value = {"paymentMethods", "paymentMethod", "paymentMethodsByMerchant", "paymentMethodsByMerchantAndActive"}, allEntries = true)
+  @CacheEvict(
+      value = {
+        "paymentMethods",
+        "paymentMethod",
+        "paymentMethodsByMerchant",
+        "paymentMethodsByMerchantAndActive"
+      },
+      allEntries = true)
   public PaymentMethod create(PaymentMethod paymentMethod) {
     if (paymentMethod == null) {
       return null;
@@ -76,7 +84,14 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
   }
 
   @Override
-  @CacheEvict(value = {"paymentMethods", "paymentMethod", "paymentMethodsByMerchant", "paymentMethodsByMerchantAndActive"}, allEntries = true)
+  @CacheEvict(
+      value = {
+        "paymentMethods",
+        "paymentMethod",
+        "paymentMethodsByMerchant",
+        "paymentMethodsByMerchantAndActive"
+      },
+      allEntries = true)
   public PaymentMethod update(PaymentMethod paymentMethod) {
     if (paymentMethod == null) {
       return null;
@@ -91,7 +106,14 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
   }
 
   @Override
-  @CacheEvict(value = {"paymentMethods", "paymentMethod", "paymentMethodsByMerchant", "paymentMethodsByMerchantAndActive"}, allEntries = true)
+  @CacheEvict(
+      value = {
+        "paymentMethods",
+        "paymentMethod",
+        "paymentMethodsByMerchant",
+        "paymentMethodsByMerchantAndActive"
+      },
+      allEntries = true)
   public void deactivate(Long id) {
 
     PaymentMethod paymentMethod = findById(id);

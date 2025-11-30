@@ -4,12 +4,12 @@ import com.pressing.model.Transaction;
 import com.pressing.repository.TransactionRepository;
 import com.pressing.service.TransactionService;
 import java.util.Collection;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
@@ -49,7 +49,18 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  @CacheEvict(value = {"transactions", "transaction", "transactionsByCustomer", "transactionsByItem", "transactionsByDate", "transactionsByDueDate", "transactionsPastDueDate", "transactionsByStatus"}, allEntries = true)
+  @CacheEvict(
+      value = {
+        "transactions",
+        "transaction",
+        "transactionsByCustomer",
+        "transactionsByItem",
+        "transactionsByDate",
+        "transactionsByDueDate",
+        "transactionsPastDueDate",
+        "transactionsByStatus"
+      },
+      allEntries = true)
   public Transaction create(Transaction transaction) {
     if (transaction == null) {
       return null;
@@ -60,7 +71,18 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  @CacheEvict(value = {"transactions", "transaction", "transactionsByCustomer", "transactionsByItem", "transactionsByDate", "transactionsByDueDate", "transactionsPastDueDate", "transactionsByStatus"}, allEntries = true)
+  @CacheEvict(
+      value = {
+        "transactions",
+        "transaction",
+        "transactionsByCustomer",
+        "transactionsByItem",
+        "transactionsByDate",
+        "transactionsByDueDate",
+        "transactionsPastDueDate",
+        "transactionsByStatus"
+      },
+      allEntries = true)
   public Transaction update(Transaction transaction) {
     if (transaction == null || transaction.getId() == null) {
       return null;

@@ -2,9 +2,9 @@ package com.pressing.repository;
 
 import com.pressing.model.Transaction;
 import java.util.Collection;
+import java.util.Date;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import java.util.Date;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 

@@ -42,7 +42,8 @@ public interface CustomerService {
 
   public Page<Customer> findByCounter(Counter counter, Pageable pageable);
 
-  public Page<Customer> findByIsActiveAndCounter(boolean isActive, Counter counter, Pageable pageable);
+  public Page<Customer> findByIsActiveAndCounter(
+      boolean isActive, Counter counter, Pageable pageable);
 
   /**
    * Create a new customer account.

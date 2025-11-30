@@ -216,7 +216,8 @@ public class EntityMapper {
     material.setName(materialDTO.getName());
     material.setDescription(materialDTO.getDescription());
     material.setCost(materialDTO.getCost());
-    // material.setQuantity(materialDTO.getQuantity()); // Quantity is not present in CleaningMaterial entity
+    // material.setQuantity(materialDTO.getQuantity()); // Quantity is not present in
+    // CleaningMaterial entity
     // material.setUnit(materialDTO.getUnit()); // Unit is not present in CleaningMaterial entity
     return material;
   }
@@ -227,7 +228,10 @@ public class EntityMapper {
     }
     Long agencyId = counter.getAgency() != null ? counter.getAgency().getId() : null;
     return new CounterDTO(
-        counter.getId(), counter.getName(), "", agencyId); // Location is not present in Counter entity
+        counter.getId(),
+        counter.getName(),
+        "",
+        agencyId); // Location is not present in Counter entity
   }
 
   public Counter toEntity(CounterDTO counterDTO) {
@@ -358,8 +362,7 @@ public class EntityMapper {
     if (permission == null) {
       return null;
     }
-    return new PermissionDTO(
-        permission.getId(), permission.getName(), permission.getDescription());
+    return new PermissionDTO(permission.getId(), permission.getName(), permission.getDescription());
   }
 
   public Permission toEntity(PermissionDTO permissionDTO) {
@@ -406,8 +409,7 @@ public class EntityMapper {
     if (transaction == null) {
       return null;
     }
-    Long customerId =
-        transaction.getCustomer() != null ? transaction.getCustomer().getId() : null;
+    Long customerId = transaction.getCustomer() != null ? transaction.getCustomer().getId() : null;
     Long itemId = transaction.getItem() != null ? transaction.getItem().getId() : null;
     return new TransactionDTO(
         transaction.getId(),

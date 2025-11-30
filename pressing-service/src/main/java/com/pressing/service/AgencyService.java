@@ -2,7 +2,6 @@ package com.pressing.service;
 
 import com.pressing.model.Agency;
 import com.pressing.model.Merchant;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
